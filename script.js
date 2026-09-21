@@ -107,10 +107,49 @@ document.addEventListener('DOMContentLoaded', () => {
     rootMargin: '0px 0px -40px 0px'
   });
 
-  document.querySelectorAll('.service-card, .project-card, .approach-step, .section-header, .about-content, .cta-banner-inner').forEach((el, index) => {
-    el.classList.add('reveal');
-    const delay = (index % 4) + 1;
-    el.classList.add(`reveal-delay-${delay}`);
-    revealObserver.observe(el);
+  document.querySelectorAll('.section-header').forEach(header => {
+    header.classList.add('reveal-up');
+    revealObserver.observe(header);
   });
+
+  document.querySelectorAll('.services-grid .service-card').forEach((card, i) => {
+    card.classList.add('reveal-scale', `reveal-delay-${(i % 3) + 1}`);
+    revealObserver.observe(card);
+  });
+
+  const aboutContent = document.querySelector('.about-content');
+  if (aboutContent) {
+    aboutContent.classList.add('reveal-left');
+    revealObserver.observe(aboutContent);
+  }
+
+  document.querySelectorAll('.projects-grid .project-card').forEach((card, i) => {
+    if (i % 2 === 0) {
+      card.classList.add('reveal-left', `reveal-delay-${(i % 2) + 1}`);
+    } else {
+      card.classList.add('reveal-right', `reveal-delay-${(i % 2) + 1}`);
+    }
+    revealObserver.observe(card);
+  });
+
+  const timelineLine = document.querySelector('.timeline-line');
+  if (timelineLine) {
+    revealObserver.observe(timelineLine);
+  }
+
+  document.querySelectorAll('.approach-timeline .approach-step').forEach((step, i) => {
+    step.classList.add('reveal-left', `reveal-delay-${i + 1}`);
+    revealObserver.observe(step);
+  });
+
+  const ctaText = document.querySelector('.cta-text-content');
+  const ctaBtns = document.querySelector('.cta-buttons-wrap');
+  if (ctaText) {
+    ctaText.classList.add('reveal-left');
+    revealObserver.observe(ctaText);
+  }
+  if (ctaBtns) {
+    ctaBtns.classList.add('reveal-right');
+    revealObserver.observe(ctaBtns);
+  }
 });
