@@ -1077,14 +1077,22 @@ ul {
     grid-template-columns: 1fr;
   }
 
-  .about-card {
-    padding: 40px 24px;
+  .about-section {
+    padding: 60px 20px;
   }
 
-  .cta-banner-card {
+  .cta-banner-section {
+    padding: 60px 20px;
+  }
+
+  .cta-banner-inner {
     flex-direction: column;
     align-items: flex-start;
-    padding: 40px 24px;
+    gap: 32px;
+  }
+
+  .cta-text-content {
+    width: 100%;
   }
 
   .cta-buttons-wrap {
@@ -1119,6 +1127,18 @@ ul {
 }
 
 @media (max-width: 480px) {
+  .cta-banner-section {
+    padding: 48px 16px;
+  }
+
+  .cta-banner-inner {
+    gap: 24px;
+  }
+
+  .cta-title {
+    font-size: 1.85rem;
+  }
+
   .site-footer {
     padding: 48px 0 24px;
   }
