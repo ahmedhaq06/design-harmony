@@ -50,48 +50,111 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  let navBackdrop = document.querySelector('.nav-backdrop');
+  if (!navBackdrop) {
+    navBackdrop = document.createElement('div');
+    navBackdrop.className = 'nav-backdrop';
+    document.body.appendChild(navBackdrop);
+  }
+
+  const closeMobileMenu = () => {
+    document.body.classList.remove('nav-open');
+    if (mainNav) mainNav.classList.remove('active');
+    if (navToggle) {
+      navToggle.classList.remove('active');
+      navToggle.setAttribute('aria-expanded', 'false');
+    }
+    if (navBackdrop) navBackdrop.classList.remove('active');
+  };
+
   if (navToggle && mainNav) {
-    navToggle.addEventListener('click', () => {
+    navToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
       const isExpanded = navToggle.getAttribute('aria-expanded') === 'true';
       navToggle.setAttribute('aria-expanded', !isExpanded);
+      navToggle.classList.toggle('active');
       mainNav.classList.toggle('active');
+      document.body.classList.toggle('nav-open');
+      if (navBackdrop) navBackdrop.classList.toggle('active');
     });
   }
 
-  dropdowns.forEach(dropdown => {
-    const link = dropdown.querySelector('.nav-link');
-    if (link) {
-      link.addEventListener('click', (e) => {
-        if (window.innerWidth <= 768) {
+  if (navBackdrop) {
+    navBackdrop.addEventListener('click', closeMobileMenu);
+  }
+
+  /* Robust Navigation & Sidebar Link Handler */
+  document.querySelectorAll('a[href]').forEach(link => {
+    link.addEventListener('click', function (e) {
+      const rawHref = this.getAttribute('href');
+      if (!rawHref) return;
+
+      // Handle mobile dropdown accordion toggle (clicking SERVICES in sidebar)
+      if (window.innerWidth <= 768 && this.classList.contains('nav-link')) {
+        const parentLi = this.parentElement;
+        if (parentLi && parentLi.classList.contains('dropdown')) {
           e.preventDefault();
-          dropdown.classList.toggle('active');
+          parentLi.classList.toggle('active');
+          return;
         }
-      });
-    }
-  });
-
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-      const targetId = this.getAttribute('href');
-      if (targetId === '#') return;
-      const targetElement = document.querySelector(targetId);
-
-      if (targetElement) {
-        e.preventDefault();
-
-        if (mainNav.classList.contains('active')) {
-          mainNav.classList.remove('active');
-          if (navToggle) navToggle.setAttribute('aria-expanded', 'false');
-        }
-
-        const headerHeight = header.offsetHeight;
-        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
-
-        window.scrollTo({
-          top: targetPosition,
-          behavior: 'smooth'
-        });
       }
+
+      // Ignore external, tel, mailto
+      if (this.getAttribute('target') === '_blank' || rawHref.startsWith('tel:') || rawHref.startsWith('mailto:')) {
+        closeMobileMenu();
+        return;
+      }
+
+      // For all actual navigation links, close mobile drawer first
+      closeMobileMenu();
+
+      // Handle same-page hash links (e.g. href="#home" or href="#services")
+      if (rawHref.startsWith('#')) {
+        if (rawHref === '#') return;
+        const targetElem = document.querySelector(rawHref);
+        if (targetElem) {
+          e.preventDefault();
+          const headerHeight = header ? header.offsetHeight : 0;
+          const targetPos = targetElem.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+          window.scrollTo({ top: targetPos, behavior: 'smooth' });
+        }
+        return;
+      }
+
+      // Determine same-page vs cross-page navigation
+      let resolvedUrl;
+      try {
+        resolvedUrl = new URL(this.href, window.location.href);
+      } catch (err) {
+        return;
+      }
+
+      const currentPath = window.location.pathname.replace(/\/$/, '');
+      const targetPath = resolvedUrl.pathname.replace(/\/$/, '');
+      const currentFile = currentPath.split('/').pop() || 'index.html';
+      const targetFile = targetPath.split('/').pop() || 'index.html';
+
+      // If clicking link to current page with no hash (e.g. HOME when on index.html):
+      if (currentFile === targetFile && !resolvedUrl.hash) {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      // If clicking link to current page with hash (e.g. index.html#services when on index.html):
+      if (currentFile === targetFile && resolvedUrl.hash) {
+        const targetElem = document.querySelector(resolvedUrl.hash);
+        if (targetElem) {
+          e.preventDefault();
+          const headerHeight = header ? header.offsetHeight : 0;
+          const targetPos = targetElem.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+          window.scrollTo({ top: targetPos, behavior: 'smooth' });
+          return;
+        }
+      }
+
+      // Cross-page navigation (e.g. from about.html to index.html or contact.html):
+      // Let standard HTML browser navigation execute natively without e.preventDefault()!
     });
   });
 
@@ -152,4 +215,66 @@ document.addEventListener('DOMContentLoaded', () => {
     ctaBtns.classList.add('reveal-right');
     revealObserver.observe(ctaBtns);
   }
+
+  /* Portfolio Filtering Logic */
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const projectCards = document.querySelectorAll('.projects-grid .project-card');
+
+  if (filterBtns.length > 0 && projectCards.length > 0) {
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const filterValue = btn.getAttribute('data-filter');
+
+        projectCards.forEach(card => {
+          const category = card.getAttribute('data-category');
+          if (filterValue === 'all' || category === filterValue) {
+            card.style.display = 'block';
+            setTimeout(() => {
+              card.style.opacity = '1';
+              card.style.transform = 'translateY(0)';
+            }, 50);
+          } else {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+              card.style.display = 'none';
+            }, 300);
+          }
+        });
+      });
+    });
+  }
+
+  /* Contact Form Interactive Submission Handler */
+  const contactForms = document.querySelectorAll('.js-contact-form');
+  contactForms.forEach(form => {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const feedback = form.querySelector('.form-feedback-msg');
+      const submitBtn = form.querySelector('.form-submit-btn');
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Sending...';
+      }
+
+      setTimeout(() => {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Message Sent!';
+        }
+        if (feedback) {
+          feedback.className = 'form-feedback-msg success';
+          feedback.innerHTML = 'Thank you for reaching out to Design Harmony! Your message has been received. We will contact you shortly.';
+          feedback.style.display = 'block';
+        }
+        form.reset();
+      }, 1000);
+    });
+  });
 });
+
+
