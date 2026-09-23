@@ -18,10 +18,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const heroBg = document.querySelector('.hero-bg');
 
-  window.addEventListener('scroll', () => {
+  const isHomePage = document.querySelector('.hero-section') !== null;
+
+  const handleScroll = () => {
     const scrollY = window.scrollY;
 
-    if (scrollY > 50) {
+    if (scrollY > 50 || !isHomePage) {
       header.classList.add('scrolled');
     } else {
       header.classList.remove('scrolled');
@@ -48,7 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
         link.classList.add('active');
       }
     });
-  });
+  };
+
+  handleScroll();
+  window.addEventListener('scroll', handleScroll);
 
   let navBackdrop = document.querySelector('.nav-backdrop');
   if (!navBackdrop) {
