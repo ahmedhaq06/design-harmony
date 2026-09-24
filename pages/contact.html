@@ -77,7 +77,7 @@
     <section class="subpage-section">
       <div class="container">
         <div class="subpage-grid-2col">
-          <!-- Left: Dual Form Selector Card -->
+          <!-- Left: 3-Form Selector Card -->
           <div class="form-card">
             <h2 class="form-card-title">Book Your Consultation</h2>
             <p class="form-card-subtitle">Select your required consultation service below:</p>
@@ -87,17 +87,20 @@
               <button type="button" class="consult-tab-btn active" id="tab-btn-interior" data-target="form-interior">
                 <span class="tab-title">Interior Consultancy</span>
                 <span class="tab-sub">Residence, Commercial, Retail, PMC</span>
-                <span class="tab-fee">Fee: ₹2,100/-</span>
+              </button>
+
+              <button type="button" class="consult-tab-btn" id="tab-btn-dob" data-target="form-dob">
+                <span class="tab-title">D.O.B Analysis</span>
+                <span class="tab-sub">Date of Birth & Numerology</span>
               </button>
 
               <button type="button" class="consult-tab-btn" id="tab-btn-vastu" data-target="form-vastu">
-                <span class="tab-title">Vastu & D.O.B Consultancy</span>
-                <span class="tab-sub">Vastu Shastra & Date of Birth</span>
-                <span class="tab-fee">Fee: ₹5,100/-</span>
+                <span class="tab-title">Vastu Consultancy</span>
+                <span class="tab-sub">Vastu Shastra & Energy</span>
               </button>
             </div>
 
-            <!-- Form 1: Interior Consultancy -->
+            <!-- Form 1: Interior Consultancy (Fee ₹2,100) -->
             <form id="form-interior" class="consultation-form active">
               <div class="form-row">
                 <div class="form-group">
@@ -140,11 +143,40 @@
                   required>
               </div>
 
-              <button type="submit" class="btn btn-gold form-submit-btn">PROCEED TO BOOK CONSULTANCY (₹2,100)</button>
+              <button type="submit" class="btn btn-gold form-submit-btn">PROCEED TO BOOK CONSULTANCY</button>
               <div class="form-feedback-msg"></div>
             </form>
 
-            <!-- Form 2: Vastu Consultancy (Vastu and D.O.B) -->
+            <!-- Form 2: D.O.B Analysis (No Fee) -->
+            <form id="form-dob" class="consultation-form" style="display: none;">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Name *</label>
+                  <input type="text" name="name" class="form-control" placeholder="e.g. Rahul Sharma" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Contact No. *</label>
+                  <input type="tel" name="contact" class="form-control" placeholder="+91 9811234164" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Date of Birth *</label>
+                <input type="date" name="dob" class="form-control" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Challenges / Key Questions *</label>
+                <textarea name="challenges" class="form-control" rows="4"
+                  placeholder="Describe the career, financial, personal, or decision-making challenges you wish to understand..."
+                  required></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-gold form-submit-btn">SUBMIT D.O.B ANALYSIS REQUEST</button>
+              <div class="form-feedback-msg"></div>
+            </form>
+
+            <!-- Form 3: Vastu Consultancy (No Fee) -->
             <form id="form-vastu" class="consultation-form" style="display: none;">
               <div class="form-row">
                 <div class="form-group">
@@ -159,18 +191,17 @@
 
               <div class="form-group">
                 <label class="form-label">Date of Birth *</label>
-                <input type="text" name="dob" class="form-control" placeholder="DD/MM/YYYY (e.g. 15/08/1988)" required>
+                <input type="date" name="dob" class="form-control" required>
               </div>
 
               <div class="form-group">
-                <label class="form-label">Challenges *</label>
-                <textarea name="challenges" class="form-control"
-                  placeholder="Please describe the spatial, health, career, or financial challenges you are facing..."
+                <label class="form-label">Challenges / Property Details *</label>
+                <textarea name="challenges" class="form-control" rows="4"
+                  placeholder="Describe spatial, direction, or energy concerns regarding your residence or commercial property..."
                   required></textarea>
               </div>
 
-              <button type="submit" class="btn btn-gold form-submit-btn">PROCEED TO BOOK VASTU CONSULTANCY
-                (₹5,100)</button>
+              <button type="submit" class="btn btn-gold form-submit-btn">SUBMIT VASTU CONSULTANCY REQUEST</button>
               <div class="form-feedback-msg"></div>
             </form>
           </div>

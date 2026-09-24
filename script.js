@@ -277,12 +277,17 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    /* Auto-select form based on URL parameter (?type=vastu or ?type=interior) */
+    /* Auto-select form based on URL parameter (?type=vastu, ?type=dob, or ?type=interior) */
     const urlParams = new URLSearchParams(window.location.search);
     const formType = urlParams.get('type') || urlParams.get('form');
 
     if (formType) {
-      const targetTabId = (formType === 'vastu' || formType === 'dob') ? 'tab-btn-vastu' : 'tab-btn-interior';
+      let targetTabId = 'tab-btn-interior';
+      if (formType === 'dob') {
+        targetTabId = 'tab-btn-dob';
+      } else if (formType === 'vastu') {
+        targetTabId = 'tab-btn-vastu';
+      }
       const targetBtn = document.getElementById(targetTabId);
       if (targetBtn) {
         setTimeout(() => {
@@ -294,7 +299,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 150);
       }
     }
+  }
 
+  if (consultationForms.length > 0) {
     consultationForms.forEach(form => {
       form.addEventListener('submit', (e) => {
         e.preventDefault();
