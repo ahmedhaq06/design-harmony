@@ -92,6 +92,20 @@
     loadSubpageEditor();
     loadLogos();
     loadProjects();
+    loadSiteContent();
+  }
+
+  function loadSiteContent() {
+    const saved = localStorage.getItem('dh_site_content');
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        if (data.phone && document.getElementById('content-phone')) document.getElementById('content-phone').value = data.phone;
+        if (data.email && document.getElementById('content-email')) document.getElementById('content-email').value = data.email;
+        if (data.address && document.getElementById('content-address')) document.getElementById('content-address').value = data.address;
+        if (data.heroTitle && document.getElementById('content-hero-title')) document.getElementById('content-hero-title').value = data.heroTitle;
+      } catch (e) {}
+    }
   }
 
   // Logout (Topbar & Sidebar buttons)

@@ -2257,8 +2257,9 @@ body {
 }
 
 .admin-sidebar-footer {
+  margin-top: auto;
   padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(198, 146, 20, 0.25);
 }
 
 /* Main Content Area */
