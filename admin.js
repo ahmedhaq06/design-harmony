@@ -94,9 +94,10 @@
     loadProjects();
   }
 
-  // Logout
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', function () {
+  // Logout (Topbar & Sidebar buttons)
+  const logoutBtns = document.querySelectorAll('#admin-logout-btn, .admin-logout-btn-action');
+  logoutBtns.forEach(btn => {
+    btn.addEventListener('click', function () {
       localStorage.removeItem('dh_admin_logged_in');
       if (supabaseClient) {
         supabaseClient.auth.signOut();
@@ -105,7 +106,7 @@
       authScreen.style.display = 'flex';
       showToast('Logged out successfully');
     });
-  }
+  });
 
   // Tab Navigation
   const navItems = document.querySelectorAll('.admin-nav-item');
