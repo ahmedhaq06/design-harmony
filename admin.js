@@ -116,8 +116,7 @@
     'tab-leads': { title: 'Form Inquiries', sub: 'View customer consultation bookings and requests in real-time.' },
     'tab-logos': { title: 'Client Logos Ticker', sub: 'Add or manage client logos displayed in the home page ticker.' },
     'tab-projects': { title: 'Projects Portfolio', sub: 'Add, update, or remove projects shown on the Projects page.' },
-    'tab-content': { title: 'Website Copy & Contact', sub: 'Edit main studio contact details and hero titles.' },
-    'tab-settings': { title: 'Handoff & Ownership Transfer', sub: 'Guide for transferring 100% backend ownership to your buyer.' }
+    'tab-content': { title: 'Website Copy & Contact', sub: 'Edit main studio contact details and hero titles.' }
   };
 
   navItems.forEach(item => {

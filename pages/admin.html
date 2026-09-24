@@ -75,9 +75,6 @@
           <button type="button" class="admin-nav-item" data-tab="tab-content">
             <span class="nav-icon">📝</span> Website Copy
           </button>
-          <button type="button" class="admin-nav-item" data-tab="tab-settings">
-            <span class="nav-icon">⚙️</span> Handoff & Transfer
-          </button>
         </nav>
 
         <div class="admin-sidebar-footer">
@@ -233,35 +230,6 @@
 
               <button type="submit" class="btn btn-gold">SAVE CONTENT CHANGES</button>
             </form>
-          </div>
-        </section>
-
-        <!-- Tab 5: Handoff & Transfer Settings -->
-        <section id="tab-settings" class="admin-tab-pane" style="display: none;">
-          <div class="admin-card">
-            <h3 class="admin-card-title">Buyer Ownership & Transfer Guide</h3>
-            <p class="admin-card-desc">
-              When selling this website, follow these simple steps so the new owner has 100% full control and you have zero access:
-            </p>
-
-            <ol class="admin-steps-list">
-              <li>
-                <strong>Create a free Supabase Account for the buyer</strong> (or have them register at <a href="https://supabase.com" target="_blank">supabase.com</a>).
-              </li>
-              <li>
-                <strong>Transfer Supabase Project Ownership:</strong> In the Supabase Dashboard, go to <code>Project Settings → Members</code> and invite the buyer's email as <em>Owner</em>, then leave the project.
-              </li>
-              <li>
-                <strong>Transfer Credentials:</strong> Provide the buyer with their Supabase Project URL and Anon Key.
-              </li>
-              <li>
-                <strong>Buyer Sets Admin Password:</strong> The buyer opens <code>/pages/admin.html</code>, clicks "Change Backend Credentials", enters their Supabase URL and Key, and creates their private admin password.
-              </li>
-            </ol>
-
-            <div class="admin-callout-box">
-              🔒 <strong>Complete Privacy Guarantee:</strong> Once the Supabase project is transferred to the buyer's email, all admin permissions, database records, and login credentials belong exclusively to the buyer. You will not have access to any dashboard data or credentials.
-            </div>
           </div>
         </section>
       </main>
