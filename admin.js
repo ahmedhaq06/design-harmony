@@ -237,23 +237,34 @@
     showToast('Client logo removed');
   };
 
-  // Add Logo Form
+  // Add Logo Form (File Upload)
   const addLogoForm = document.getElementById('add-logo-form');
   if (addLogoForm) {
     addLogoForm.addEventListener('submit', function (e) {
       e.preventDefault();
       const name = document.getElementById('logo-client-name').value.trim();
-      const path = document.getElementById('logo-img-path').value.trim();
+      const fileInput = document.getElementById('logo-file-input');
 
-      if (!name || !path) return;
+      if (!name || !fileInput || !fileInput.files[0]) {
+        alert('Please enter a client name and select an image file to upload.');
+        return;
+      }
 
-      let logos = JSON.parse(localStorage.getItem('dh_custom_logos') || JSON.stringify(defaultLogosList));
-      logos.push({ name: name, path: path });
-      localStorage.setItem('dh_custom_logos', JSON.stringify(logos));
+      const file = fileInput.files[0];
+      const reader = new FileReader();
 
-      loadLogos();
-      addLogoForm.reset();
-      showToast(`Added logo for ${name}`);
+      reader.onload = function (event) {
+        const imageDataUrl = event.target.result;
+        let logos = JSON.parse(localStorage.getItem('dh_custom_logos') || JSON.stringify(defaultLogosList));
+        logos.push({ name: name, path: imageDataUrl });
+        localStorage.setItem('dh_custom_logos', JSON.stringify(logos));
+
+        loadLogos();
+        addLogoForm.reset();
+        showToast(`Uploaded and added logo for ${name}!`);
+      };
+
+      reader.readAsDataURL(file);
     });
   }
 
@@ -305,24 +316,35 @@
     showToast('Project deleted');
   };
 
-  // Add Project Form
+  // Add Project Form (File Upload)
   const addProjectForm = document.getElementById('add-project-form');
   if (addProjectForm) {
     addProjectForm.addEventListener('submit', function (e) {
       e.preventDefault();
       const title = document.getElementById('project-title').value.trim();
       const category = document.getElementById('project-category').value;
-      const img = document.getElementById('project-img').value.trim();
+      const fileInput = document.getElementById('project-file-input');
 
-      if (!title || !img) return;
+      if (!title || !fileInput || !fileInput.files[0]) {
+        alert('Please enter a project title and select an image file to upload.');
+        return;
+      }
 
-      let projects = JSON.parse(localStorage.getItem('dh_custom_projects') || '[]');
-      projects.push({ title, category, img });
-      localStorage.setItem('dh_custom_projects', JSON.stringify(projects));
+      const file = fileInput.files[0];
+      const reader = new FileReader();
 
-      loadProjects();
-      addProjectForm.reset();
-      showToast(`Added ${title} to Projects`);
+      reader.onload = function (event) {
+        const imageDataUrl = event.target.result;
+        let projects = JSON.parse(localStorage.getItem('dh_custom_projects') || JSON.stringify(defaultProjectsList));
+        projects.push({ title: title, category: category, img: imageDataUrl });
+        localStorage.setItem('dh_custom_projects', JSON.stringify(projects));
+
+        loadProjects();
+        addProjectForm.reset();
+        showToast(`Uploaded and added ${title} to Projects!`);
+      };
+
+      reader.readAsDataURL(file);
     });
   }
 

@@ -221,6 +221,61 @@ document.addEventListener('DOMContentLoaded', () => {
     revealObserver.observe(ctaBtns);
   }
 
+  /* Dynamic Sync for Admin-Uploaded Client Logos Ticker */
+  const marqueeTracks = document.querySelectorAll('.clients-marquee-track');
+  const customLogosStr = localStorage.getItem('dh_custom_logos');
+  if (marqueeTracks.length > 0 && customLogosStr) {
+    try {
+      const customLogos = JSON.parse(customLogosStr);
+      if (Array.isArray(customLogos) && customLogos.length > 0) {
+        const logoHTML = customLogos.map(item => {
+          const imgPath = typeof item === 'string' ? `our clients/${item}` : item.path;
+          const altName = typeof item === 'string' ? item : item.name;
+          return `
+            <div class="client-logo-item">
+              <img src="${imgPath}" alt="${altName}">
+            </div>
+          `;
+        }).join('');
+
+        marqueeTracks.forEach(track => {
+          track.innerHTML = logoHTML;
+        });
+      }
+    } catch (err) {
+      console.error('Error syncing custom logos:', err);
+    }
+  }
+
+  /* Dynamic Sync for Admin-Uploaded Portfolio Projects */
+  const projectsGridElem = document.querySelector('.projects-grid');
+  const customProjectsStr = localStorage.getItem('dh_custom_projects');
+  if (projectsGridElem && customProjectsStr) {
+    try {
+      const customProjects = JSON.parse(customProjectsStr);
+      if (Array.isArray(customProjects) && customProjects.length > 0) {
+        const projectsHTML = customProjects.map(p => {
+          const categorySlug = (p.category || 'residential').toLowerCase().includes('corporate') ? 'corporate' :
+            (p.category || '').toLowerCase().includes('retail') ? 'retail' : 'residential';
+          return `
+            <div class="project-card" data-category="${categorySlug}">
+              <div class="project-img-wrap">
+                <img src="${p.img}" alt="${p.title}" class="project-img">
+                <div class="project-overlay">
+                  <span class="project-category-tag">${p.category || 'Interior'}</span>
+                  <h3 class="project-title">${p.title}</h3>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+        projectsGridElem.innerHTML = projectsHTML;
+      }
+    } catch (err) {
+      console.error('Error syncing custom projects:', err);
+    }
+  }
+
   /* Portfolio Filtering Logic */
   const filterBtns = document.querySelectorAll('.filter-btn');
   const projectCards = document.querySelectorAll('.projects-grid .project-card');
