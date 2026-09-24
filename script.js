@@ -221,27 +221,71 @@ document.addEventListener('DOMContentLoaded', () => {
     revealObserver.observe(ctaBtns);
   }
 
-  /* Dynamic Sync for Admin-Managed Services Grid */
+  /* Dynamic Sync for Admin-Managed Services Grid, Header Dropdown & Footer */
   const servicesGrid = document.querySelector('.services-grid');
   const customServicesStr = localStorage.getItem('dh_custom_services');
-  if (servicesGrid && customServicesStr) {
+  if (customServicesStr) {
     try {
       const customServices = JSON.parse(customServicesStr);
       if (Array.isArray(customServices) && customServices.length > 0) {
-        servicesGrid.innerHTML = customServices.map(s => `
-          <article class="service-card">
-            <div class="card-media">
-              <div class="card-img-wrap">
-                <img src="${s.img.replace('../', '')}" alt="${s.title}">
+        const isSubDir = window.location.pathname.toLowerCase().includes('/pages/');
+
+        const fixImgPath = (url) => {
+          if (!url) return '';
+          if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
+          if (isSubDir) {
+            return url.startsWith('../') ? url : '../' + url.replace(/^\//, '');
+          } else {
+            return url.replace(/^\.\.\//, '');
+          }
+        };
+
+        const fixLinkPath = (link) => {
+          if (!link) return '#';
+          if (link.startsWith('http://') || link.startsWith('https://') || link.startsWith('#')) return link;
+          if (isSubDir) {
+            return link.startsWith('pages/') ? link.replace(/^pages\//, '') : (link.startsWith('../') ? link.replace(/^\.\.\//, '') : link);
+          } else {
+            return link.startsWith('pages/') ? link : 'pages/' + link.replace(/^\//, '');
+          }
+        };
+
+        // 1. Home Page Services Grid
+        if (servicesGrid) {
+          servicesGrid.innerHTML = customServices.map(s => `
+            <article class="service-card reveal-scale active" style="opacity: 1; transform: scale(1);">
+              <div class="card-media">
+                <div class="card-img-wrap">
+                  <img src="${fixImgPath(s.img)}" alt="${s.title}">
+                </div>
               </div>
-            </div>
-            <div class="card-content">
-              <h3 class="card-title">${s.title}</h3>
-              <p class="card-text">${s.desc}</p>
-              <a href="${s.link.replace('pages/', 'pages/')}" class="card-link">EXPLORE SERVICE <span class="arrow">→</span></a>
-            </div>
-          </article>
-        `).join('');
+              <div class="card-content">
+                <h3 class="card-title">${s.title}</h3>
+                <p class="card-text">${s.desc}</p>
+                <a href="${fixLinkPath(s.link)}" class="card-link">EXPLORE SERVICE <span class="arrow">→</span></a>
+              </div>
+            </article>
+          `).join('');
+
+          document.querySelectorAll('.services-grid .service-card').forEach((card, i) => {
+            card.classList.add('reveal-scale', 'active', `reveal-delay-${(i % 3) + 1}`);
+            revealObserver.observe(card);
+          });
+        }
+
+        // 2. Header Services Dropdown
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+          menu.innerHTML = customServices.map(s => `
+            <li><a href="${fixLinkPath(s.link)}">${s.title}</a></li>
+          `).join('');
+        });
+
+        // 3. Footer Services List
+        document.querySelectorAll('.footer-col:nth-child(3) .footer-links').forEach(list => {
+          list.innerHTML = customServices.map(s => `
+            <li><a href="${fixLinkPath(s.link)}">${s.title}</a></li>
+          `).join('');
+        });
       }
     } catch (e) {
       console.error('Error syncing custom services:', e);
