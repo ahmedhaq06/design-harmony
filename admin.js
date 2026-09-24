@@ -6,79 +6,26 @@
   // DOM Elements
   const authScreen = document.getElementById('auth-screen');
   const dashboardScreen = document.getElementById('dashboard-screen');
-  const configSetupBox = document.getElementById('config-setup-box');
   const adminLoginForm = document.getElementById('admin-login-form');
-  const supabaseUrlInput = document.getElementById('supabase-url');
-  const supabaseKeyInput = document.getElementById('supabase-key');
-  const saveConfigBtn = document.getElementById('save-config-btn');
-  const toggleConfigBtn = document.getElementById('toggle-config-btn');
   const authErrorMsg = document.getElementById('auth-error-msg');
   const logoutBtn = document.getElementById('admin-logout-btn');
   const toastEl = document.getElementById('dashboard-toast');
 
-  const DEFAULT_SUPABASE_URL = 'https://jdkrisfxkegywsyhqkpj.supabase.co';
-  const DEFAULT_SUPABASE_KEY = 'sb_secret_EOKOmYPR_GH_OEYEHeQXkw_VrIYPFX6';
+  const SUPABASE_URL = 'https://jdkrisfxkegywsyhqkpj.supabase.co';
+  const SUPABASE_KEY = 'sb_secret_EOKOmYPR_GH_OEYEHeQXkw_VrIYPFX6';
 
   let supabaseClient = null;
 
   // Initial Config Check
   function initConfig() {
-    const savedUrl = localStorage.getItem('dh_supabase_url') || DEFAULT_SUPABASE_URL;
-    const savedKey = localStorage.getItem('dh_supabase_key') || DEFAULT_SUPABASE_KEY;
-
-    if (supabaseUrlInput) supabaseUrlInput.value = savedUrl;
-    if (supabaseKeyInput) supabaseKeyInput.value = savedKey;
-
-    // Show login form by default if credentials exist
-    if (savedUrl && savedKey) {
-      if (configSetupBox) configSetupBox.style.display = 'none';
-      if (adminLoginForm) adminLoginForm.style.display = 'block';
-
-      if (window.supabase) {
-        try {
-          supabaseClient = window.supabase.createClient(savedUrl, savedKey);
-          checkExistingSession();
-        } catch (err) {
-          console.error(err);
-        }
+    if (window.supabase) {
+      try {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        checkExistingSession();
+      } catch (err) {
+        console.error('Supabase init error:', err);
       }
-    } else {
-      showConfigBox();
     }
-  }
-
-  function showConfigBox() {
-    configSetupBox.style.display = 'block';
-    adminLoginForm.style.display = 'none';
-  }
-
-  // Save Supabase Credentials
-  if (saveConfigBtn) {
-    saveConfigBtn.addEventListener('click', function () {
-      const url = supabaseUrlInput.value.trim();
-      const key = supabaseKeyInput.value.trim();
-
-      if (!url || !key) {
-        alert('Please enter both Supabase Project URL and Anon Key.');
-        return;
-      }
-
-      localStorage.setItem('dh_supabase_url', url);
-      localStorage.setItem('dh_supabase_key', key);
-
-      if (window.supabase) {
-        supabaseClient = window.supabase.createClient(url, key);
-        configSetupBox.style.display = 'none';
-        adminLoginForm.style.display = 'block';
-        showToast('Supabase backend connected successfully!');
-      }
-    });
-  }
-
-  if (toggleConfigBtn) {
-    toggleConfigBtn.addEventListener('click', function () {
-      showConfigBox();
-    });
   }
 
   // Check Auth Session
