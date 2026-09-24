@@ -29,8 +29,8 @@
           <p class="admin-auth-subtitle">Client Admin Portal & Content Management System</p>
         </div>
 
-        <!-- Credentials Config (Shown if not configured) -->
-        <div id="config-setup-box" class="admin-config-box">
+        <!-- Credentials Config (Hidden by default, accessible via link) -->
+        <div id="config-setup-box" class="admin-config-box" style="display: none;">
           <h3 class="config-title">Backend Connection Setup</h3>
           <p class="config-desc">Connect to your private Supabase backend to enable real-time updates and secure logins.</p>
           <div class="form-group">
@@ -44,8 +44,8 @@
           <button type="button" id="save-config-btn" class="btn btn-gold form-submit-btn">CONNECT TO SUPABASE</button>
         </div>
 
-        <!-- Login Form (Shown once configured) -->
-        <form id="admin-login-form" class="admin-login-form" style="display: none;">
+        <!-- Login Form (Default view) -->
+        <form id="admin-login-form" class="admin-login-form" style="display: block;">
           <h3 class="form-card-title text-center" style="margin-bottom: 20px;">Admin Login</h3>
           
           <div class="form-group">

@@ -29,14 +29,18 @@
     if (supabaseUrlInput) supabaseUrlInput.value = savedUrl;
     if (supabaseKeyInput) supabaseKeyInput.value = savedKey;
 
-    if (savedUrl && savedKey && window.supabase) {
-      try {
-        supabaseClient = window.supabase.createClient(savedUrl, savedKey);
-        if (configSetupBox) configSetupBox.style.display = 'none';
-        if (adminLoginForm) adminLoginForm.style.display = 'block';
-        checkExistingSession();
-      } catch (err) {
-        showConfigBox();
+    // Show login form by default if credentials exist
+    if (savedUrl && savedKey) {
+      if (configSetupBox) configSetupBox.style.display = 'none';
+      if (adminLoginForm) adminLoginForm.style.display = 'block';
+
+      if (window.supabase) {
+        try {
+          supabaseClient = window.supabase.createClient(savedUrl, savedKey);
+          checkExistingSession();
+        } catch (err) {
+          console.error(err);
+        }
       }
     } else {
       showConfigBox();
