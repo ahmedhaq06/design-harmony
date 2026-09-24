@@ -63,7 +63,8 @@
         </div>
 
         <nav class="admin-nav">
-          <button type="button" class="admin-nav-item active" data-tab="tab-leads">Form Inquiries</button>
+          <button type="button" class="admin-nav-item active" data-tab="tab-services">Services Control Center</button>
+          <button type="button" class="admin-nav-item" data-tab="tab-subpages">Service Subpages Editor</button>
           <button type="button" class="admin-nav-item" data-tab="tab-logos">Client Logos</button>
           <button type="button" class="admin-nav-item" data-tab="tab-projects">Projects Showcase</button>
           <button type="button" class="admin-nav-item" data-tab="tab-content">Website Copy</button>
@@ -79,8 +80,8 @@
         <!-- Top Bar -->
         <header class="admin-topbar">
           <div>
-            <h2 id="current-tab-title" class="admin-page-title">Form Inquiries</h2>
-            <p id="current-tab-sub" class="admin-page-sub">View customer consultation bookings and requests in real-time.</p>
+            <h2 id="current-tab-title" class="admin-page-title">Services Control Center</h2>
+            <p id="current-tab-sub" class="admin-page-sub">Add, edit, or remove services displayed across the website.</p>
           </div>
 
           <div class="admin-topbar-actions">
@@ -91,33 +92,120 @@
         <!-- Notification Banner -->
         <div id="dashboard-toast" class="admin-toast" style="display: none;"></div>
 
-        <!-- Tab 1: Form Inquiries / Leads -->
-        <section id="tab-leads" class="admin-tab-pane active">
+        <!-- Tab 1: Services Control Center (Add, Edit, Delete) -->
+        <section id="tab-services" class="admin-tab-pane active">
           <div class="admin-card">
             <div class="admin-card-header">
-              <h3 class="admin-card-title">Received Consultation Requests</h3>
-              <button type="button" id="refresh-leads-btn" class="btn btn-outline-gold btn-sm">REFRESH DATA</button>
+              <h3 class="admin-card-title" id="service-form-title">Add New Service</h3>
+              <button type="button" id="cancel-service-edit-btn" class="btn btn-outline-danger btn-sm" style="display:none;">CANCEL EDIT</button>
+            </div>
+            <form id="service-form">
+              <input type="hidden" id="service-edit-index" value="-1">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Service Title *</label>
+                  <input type="text" id="service-title" class="form-control" placeholder="e.g. Residential Interiors" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Subpage URL / Link *</label>
+                  <input type="text" id="service-link" class="form-control" placeholder="pages/residential-interiors.html" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Short Summary / Description *</label>
+                <textarea id="service-desc" class="form-control" rows="3" placeholder="Homes designed for the way you live. Comfortable, functional and timeless spaces..." required></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Upload Service Card Image *</label>
+                <input type="file" id="service-img-input" class="form-control" accept="image/*">
+                <small style="color: #b8ac9f; display: block; margin-top: 6px;">Select an image file from your computer or phone. (Required for new service)</small>
+              </div>
+              <button type="submit" id="service-submit-btn" class="btn btn-gold">SAVE & ADD SERVICE</button>
+            </form>
+          </div>
+
+          <div class="admin-card mt-4">
+            <div class="admin-card-header">
+              <h3 class="admin-card-title">Manage Existing Services</h3>
+            </div>
+            <div id="services-admin-grid" class="admin-services-grid">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Tab 2: Service Subpages Content Editor -->
+        <section id="tab-subpages" class="admin-tab-pane" style="display: none;">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h3 class="admin-card-title">Edit Service Subpage Content</h3>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 28px;">
+              <label class="form-label" style="font-size: 0.95rem; color: var(--primary-gold);">Select Service Subpage to Edit *</label>
+              <select id="subpage-select" class="form-control" style="font-size: 1rem; padding: 14px;">
+                <option value="residential">Residential Interiors (pages/residential-interiors.html)</option>
+                <option value="corporate">Corporate Interiors (pages/corporate-interiors.html)</option>
+                <option value="retail">Retail Interiors (pages/retail-interiors.html)</option>
+                <option value="consultation">Project Management Consultancy (pages/consultation.html)</option>
+                <option value="vastu">Vastu Consultancy (pages/vastu-consultancy.html)</option>
+                <option value="dob">DOB Analysis (pages/dob-analysis.html)</option>
+              </select>
             </div>
 
-            <div class="table-responsive">
-              <table class="admin-table">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Form Type</th>
-                    <th>Name</th>
-                    <th>Contact</th>
-                    <th>Email</th>
-                    <th>Details</th>
-                  </tr>
-                </thead>
-                <tbody id="leads-table-body">
-                  <tr>
-                    <td colspan="6" class="text-center py-4 text-muted">No form inquiries received yet.</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            <form id="subpage-editor-form">
+              <h4 style="color: var(--primary-gold); margin-bottom: 16px; border-bottom: 1px solid rgba(198, 146, 20, 0.2); padding-bottom: 8px;">Hero Section & Main Overview</h4>
+              
+              <div class="form-group">
+                <label class="form-label">Subpage Tagline / Subtitle</label>
+                <input type="text" id="subpage-hero-subtitle" class="form-control" placeholder="OUR SERVICES">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Main Heading</label>
+                <input type="text" id="subpage-hero-title" class="form-control" placeholder="Turning Your Design Vision into a Well-Executed Space">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Main Overview Paragraph 1</label>
+                <textarea id="subpage-p1" class="form-control" rows="4" placeholder="First overview paragraph..."></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Main Overview Paragraph 2</label>
+                <textarea id="subpage-p2" class="form-control" rows="4" placeholder="Second overview paragraph..."></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Upload Hero Featured Image</label>
+                <input type="file" id="subpage-img-input" class="form-control" accept="image/*">
+                <div id="subpage-current-img-preview" style="margin-top: 10px;"></div>
+              </div>
+
+              <h4 style="color: var(--primary-gold); margin-top: 32px; margin-bottom: 16px; border-bottom: 1px solid rgba(198, 146, 20, 0.2); padding-bottom: 8px;">Section 2: Importance & Details</h4>
+
+              <div class="form-group">
+                <label class="form-label">Section 2 Tagline</label>
+                <input type="text" id="subpage-sec2-tagline" class="form-control" placeholder="EXCELLENCE IN EXECUTION">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Section 2 Heading</label>
+                <input type="text" id="subpage-sec2-title" class="form-control" placeholder="Importance of Professional Management">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Section 2 Paragraph 1</label>
+                <textarea id="subpage-sec2-p1" class="form-control" rows="4" placeholder="First paragraph..."></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Section 2 Paragraph 2</label>
+                <textarea id="subpage-sec2-p2" class="form-control" rows="4" placeholder="Second paragraph..."></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-gold" style="padding: 16px 32px; font-size: 1rem; margin-top: 20px;">SAVE & APPLY SUBPAGE CONTENT</button>
+            </form>
           </div>
         </section>
 

@@ -221,6 +221,78 @@ document.addEventListener('DOMContentLoaded', () => {
     revealObserver.observe(ctaBtns);
   }
 
+  /* Dynamic Sync for Admin-Managed Services Grid */
+  const servicesGrid = document.querySelector('.services-grid');
+  const customServicesStr = localStorage.getItem('dh_custom_services');
+  if (servicesGrid && customServicesStr) {
+    try {
+      const customServices = JSON.parse(customServicesStr);
+      if (Array.isArray(customServices) && customServices.length > 0) {
+        servicesGrid.innerHTML = customServices.map(s => `
+          <article class="service-card">
+            <div class="card-media">
+              <div class="card-img-wrap">
+                <img src="${s.img.replace('../', '')}" alt="${s.title}">
+              </div>
+            </div>
+            <div class="card-content">
+              <h3 class="card-title">${s.title}</h3>
+              <p class="card-text">${s.desc}</p>
+              <a href="${s.link.replace('pages/', 'pages/')}" class="card-link">EXPLORE SERVICE <span class="arrow">→</span></a>
+            </div>
+          </article>
+        `).join('');
+      }
+    } catch (e) {
+      console.error('Error syncing custom services:', e);
+    }
+  }
+
+  /* Dynamic Sync for Admin-Edited Service Subpages */
+  const currentPath = window.location.pathname.toLowerCase();
+  let subpageKey = '';
+  if (currentPath.includes('residential-interiors')) subpageKey = 'residential';
+  else if (currentPath.includes('corporate-interiors')) subpageKey = 'corporate';
+  else if (currentPath.includes('retail-interiors')) subpageKey = 'retail';
+  else if (currentPath.includes('consultation')) subpageKey = 'consultation';
+  else if (currentPath.includes('vastu-consultancy')) subpageKey = 'vastu';
+  else if (currentPath.includes('dob-analysis')) subpageKey = 'dob';
+
+  if (subpageKey) {
+    const subpageDataStr = localStorage.getItem(`dh_subpage_${subpageKey}`);
+    if (subpageDataStr) {
+      try {
+        const d = JSON.parse(subpageDataStr);
+        const heroSub = document.querySelector('.page-hero-subtitle');
+        const heroTitle = document.querySelector('.page-hero-title');
+        const sec1Tagline = document.querySelector('.subpage-section:nth-of-type(1) .section-tagline');
+        const sec1Title = document.querySelector('.subpage-section:nth-of-type(1) .about-title');
+        const sec1Ps = document.querySelectorAll('.subpage-section:nth-of-type(1) .subpage-text-body p');
+        const sec1Img = document.querySelector('.subpage-hero-img');
+
+        const sec2Tagline = document.querySelector('.subpage-section:nth-of-type(2) .section-tagline');
+        const sec2Title = document.querySelector('.subpage-section:nth-of-type(2) .about-title');
+        const sec2Ps = document.querySelectorAll('.subpage-section:nth-of-type(2) .subpage-text-body p');
+
+        if (heroSub && d.heroSubtitle) heroSub.textContent = d.heroSubtitle;
+        if (heroTitle && d.heroTitle) heroTitle.textContent = d.heroTitle;
+        if (sec1Tagline && d.heroSubtitle) sec1Tagline.textContent = d.heroSubtitle;
+        if (sec1Title && d.heroTitle) sec1Title.textContent = d.heroTitle;
+
+        if (sec1Ps.length > 0 && d.p1) sec1Ps[0].textContent = d.p1;
+        if (sec1Ps.length > 1 && d.p2) sec1Ps[1].textContent = d.p2;
+        if (sec1Img && d.img) sec1Img.src = d.img;
+
+        if (sec2Tagline && d.sec2Tagline) sec2Tagline.textContent = d.sec2Tagline;
+        if (sec2Title && d.sec2Title) sec2Title.textContent = d.sec2Title;
+        if (sec2Ps.length > 0 && d.sec2P1) sec2Ps[0].textContent = d.sec2P1;
+        if (sec2Ps.length > 1 && d.sec2P2) sec2Ps[1].textContent = d.sec2P2;
+      } catch (e) {
+        console.error('Error syncing subpage content:', e);
+      }
+    }
+  }
+
   /* Dynamic Sync for Admin-Uploaded Client Logos Ticker */
   const marqueeTracks = document.querySelectorAll('.clients-marquee-track');
   const customLogosStr = localStorage.getItem('dh_custom_logos');

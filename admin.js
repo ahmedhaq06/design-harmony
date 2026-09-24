@@ -88,7 +88,8 @@
   function showDashboard() {
     authScreen.style.display = 'none';
     dashboardScreen.style.display = 'flex';
-    loadLeads();
+    loadServices();
+    loadSubpageEditor();
     loadLogos();
     loadProjects();
   }
@@ -113,7 +114,8 @@
   const currentTabSub = document.getElementById('current-tab-sub');
 
   const tabTitles = {
-    'tab-leads': { title: 'Form Inquiries', sub: 'View customer consultation bookings and requests in real-time.' },
+    'tab-services': { title: 'Services Control Center', sub: 'Add, edit, or remove services displayed across the website.' },
+    'tab-subpages': { title: 'Service Subpages Editor', sub: 'Customize titles, paragraphs, and featured images for service subpages.' },
     'tab-logos': { title: 'Client Logos Ticker', sub: 'Add or manage client logos displayed in the home page ticker.' },
     'tab-projects': { title: 'Projects Portfolio', sub: 'Add, update, or remove projects shown on the Projects page.' },
     'tab-content': { title: 'Website Copy & Contact', sub: 'Edit main studio contact details and hero titles.' }
@@ -137,37 +139,288 @@
     });
   });
 
-  // Mock / Real Leads Loader
-  function loadLeads() {
-    const tableBody = document.getElementById('leads-table-body');
-    const localLeads = JSON.parse(localStorage.getItem('dh_form_leads') || '[]');
+  // Default Services List
+  const defaultServicesList = [
+    {
+      title: 'Residential Interiors',
+      desc: 'Homes designed for the way you live. Comfortable, functional and timeless spaces tailored to your lifestyle.',
+      img: '../assets/residential interior.jpeg',
+      link: 'pages/residential-interiors.html'
+    },
+    {
+      title: 'Corporate Interiors',
+      desc: 'Professional spaces designed for productivity. Smart layout, modern designs and efficient environments.',
+      img: '../assets/corporate interior.jpeg',
+      link: 'pages/corporate-interiors.html'
+    },
+    {
+      title: 'Retail Interiors',
+      desc: 'Engaging spaces that reflect your brand and attract customers. Designed to create experiences.',
+      img: '../assets/retail interior.jpeg',
+      link: 'pages/retail-interiors.html'
+    },
+    {
+      title: 'Project Management Consultancy',
+      desc: 'End-to-end management turning interior designs into flawlessly executed spaces on time and on budget.',
+      img: '../assets/project managment consultancy.jpeg',
+      link: 'pages/consultation.html'
+    },
+    {
+      title: 'Vastu Consultancy',
+      desc: 'Harmonize your space with ancient Vastu Shastra principles to bring positive energy and alignment.',
+      img: '../assets/vastu consultancy.jpeg',
+      link: 'pages/vastu-consultancy.html'
+    },
+    {
+      title: 'D.O.B Analysis',
+      desc: 'Unlock personalized spatial insights using your Date of Birth & Numerology matrix for growth.',
+      img: '../assets/D.O.B analysis.jpeg',
+      link: 'pages/dob-analysis.html'
+    }
+  ];
 
-    if (localLeads.length === 0) {
-      tableBody.innerHTML = `
-        <tr>
-          <td colspan="6" class="text-center py-4 text-muted">No form inquiries received yet. Submit a form on the site to see real-time leads here!</td>
-        </tr>
-      `;
-      return;
+  // 1. SERVICES CONTROL CENTER (Add, Edit, Delete)
+  function loadServices() {
+    const servicesGrid = document.getElementById('services-admin-grid');
+    if (!servicesGrid) return;
+
+    let services = defaultServicesList;
+    const customServices = localStorage.getItem('dh_custom_services');
+    if (customServices) {
+      try {
+        const parsed = JSON.parse(customServices);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          services = parsed;
+        }
+      } catch (e) { }
     }
 
-    tableBody.innerHTML = localLeads.map(lead => `
-      <tr>
-        <td>${lead.date || 'Today'}</td>
-        <td><span class="badge badge-gold">${lead.type || 'Consultation'}</span></td>
-        <td><strong>${lead.name || 'N/A'}</strong></td>
-        <td>${lead.contact || 'N/A'}</td>
-        <td>${lead.email || 'N/A'}</td>
-        <td>${lead.details || lead.budget || 'N/A'}</td>
-      </tr>
+    servicesGrid.innerHTML = services.map((s, idx) => `
+      <div class="admin-project-card">
+        <img src="${s.img}" alt="${s.title}" class="admin-project-img" onerror="this.src='../assets/logo.jpeg'">
+        <div class="admin-project-body">
+          <span class="badge badge-gold">${s.link || 'Service'}</span>
+          <h4 class="admin-project-title" style="margin-top: 6px;">${s.title}</h4>
+          <p style="font-size: 0.82rem; color: #c4b9ad; margin-bottom: 12px; line-height: 1.4;">${s.desc}</p>
+          <div style="display: flex; gap: 8px; width: 100%;">
+            <button type="button" class="btn btn-outline-gold btn-sm" style="flex: 1;" onclick="editService(${idx})">Edit</button>
+            <button type="button" class="btn btn-outline-danger btn-sm" style="flex: 1;" onclick="deleteService(${idx})">Delete</button>
+          </div>
+        </div>
+      </div>
     `).join('');
   }
 
-  const refreshLeadsBtn = document.getElementById('refresh-leads-btn');
-  if (refreshLeadsBtn) {
-    refreshLeadsBtn.addEventListener('click', function () {
-      loadLeads();
-      showToast('Leads refreshed!');
+  window.editService = function (index) {
+    let services = defaultServicesList;
+    const customServices = localStorage.getItem('dh_custom_services');
+    if (customServices) {
+      try { services = JSON.parse(customServices); } catch (e) { }
+    }
+
+    const target = services[index];
+    if (!target) return;
+
+    document.getElementById('service-edit-index').value = index;
+    document.getElementById('service-title').value = target.title || '';
+    document.getElementById('service-link').value = target.link || '';
+    document.getElementById('service-desc').value = target.desc || '';
+
+    document.getElementById('service-form-title').textContent = `Edit Service: ${target.title}`;
+    document.getElementById('service-submit-btn').textContent = 'UPDATE SERVICE';
+    document.getElementById('cancel-service-edit-btn').style.display = 'inline-block';
+
+    window.scrollTo({ top: 100, behavior: 'smooth' });
+  };
+
+  const cancelServiceEditBtn = document.getElementById('cancel-service-edit-btn');
+  if (cancelServiceEditBtn) {
+    cancelServiceEditBtn.addEventListener('click', resetServiceForm);
+  }
+
+  function resetServiceForm() {
+    const serviceForm = document.getElementById('service-form');
+    if (serviceForm) serviceForm.reset();
+    document.getElementById('service-edit-index').value = '-1';
+    document.getElementById('service-form-title').textContent = 'Add New Service';
+    document.getElementById('service-submit-btn').textContent = 'SAVE & ADD SERVICE';
+    if (cancelServiceEditBtn) cancelServiceEditBtn.style.display = 'none';
+  }
+
+  window.deleteService = function (index) {
+    let services = defaultServicesList;
+    const customServices = localStorage.getItem('dh_custom_services');
+    if (customServices) {
+      try { services = JSON.parse(customServices); } catch (e) { }
+    }
+
+    const title = services[index] ? services[index].title : 'Service';
+    if (confirm(`Are you sure you want to delete "${title}"?`)) {
+      services.splice(index, 1);
+      localStorage.setItem('dh_custom_services', JSON.stringify(services));
+      loadServices();
+      resetServiceForm();
+      showToast(`Deleted ${title}`);
+    }
+  };
+
+  const serviceForm = document.getElementById('service-form');
+  if (serviceForm) {
+    serviceForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const editIndex = parseInt(document.getElementById('service-edit-index').value, 10);
+      const title = document.getElementById('service-title').value.trim();
+      const link = document.getElementById('service-link').value.trim();
+      const desc = document.getElementById('service-desc').value.trim();
+      const imgInput = document.getElementById('service-img-input');
+
+      let services = JSON.parse(localStorage.getItem('dh_custom_services') || JSON.stringify(defaultServicesList));
+
+      let imgUrl = editIndex >= 0 && services[editIndex] ? services[editIndex].img : '../assets/logo.jpeg';
+      if (imgInput && imgInput.files[0]) {
+        imgUrl = await uploadImageHelper(imgInput.files[0], 'services');
+      } else if (editIndex < 0 && !imgInput.files[0]) {
+        alert('Please select an image file to upload for the new service.');
+        return;
+      }
+
+      const serviceObj = { title, desc, img: imgUrl, link };
+
+      if (editIndex >= 0) {
+        services[editIndex] = serviceObj;
+        showToast(`Updated ${title}!`);
+      } else {
+        services.push(serviceObj);
+        showToast(`Added new service: ${title}!`);
+      }
+
+      localStorage.setItem('dh_custom_services', JSON.stringify(services));
+      loadServices();
+      resetServiceForm();
+    });
+  }
+
+  // 2. SERVICES SUBPAGES EDITOR
+  const subpageSelect = document.getElementById('subpage-select');
+  const subpageEditorForm = document.getElementById('subpage-editor-form');
+
+  const defaultSubpagesData = {
+    residential: {
+      heroSubtitle: 'OUR SERVICES',
+      heroTitle: 'Residential Interior Design',
+      p1: 'At Design Harmony, we transform residential spaces into elegant, functional homes tailored to your lifestyle. From living rooms and bedrooms to kitchens and complete home interiors, we carefully plan every detail.',
+      p2: 'Our designs combine aesthetics with practicality, creating environments that feel comfortable, timeless, and uniquely yours.',
+      sec2Tagline: 'DESIGN PHILOSOPHY',
+      sec2Title: 'Importance of Thoughtful Interior Design',
+      sec2P1: 'A well-designed home is not just about beautiful finishes—it is about creating a space that works effortlessly for the people living in it.',
+      sec2P2: 'At Design Harmony, we balance creative design with smart space utilization, ensuring every corner serves a purpose while maintaining a cohesive aesthetic.'
+    },
+    corporate: {
+      heroSubtitle: 'COMMERCIAL DESIGN',
+      heroTitle: 'Corporate Interior Design',
+      p1: 'At Design Harmony, we create professional, modern, and efficient commercial spaces tailored to your business needs.',
+      p2: 'From corporate offices and executive suites to reception areas, our designs reflect your brand identity while enhancing employee comfort.',
+      sec2Tagline: 'BUSINESS VALUE',
+      sec2Title: 'Importance of Effective Commercial Interior Design',
+      sec2P1: 'A well-designed commercial space can improve productivity, workflow, space utilization, and customer experience.',
+      sec2P2: 'At Design Harmony, we carefully consider space planning, lighting, furniture, storage, and circulation to create efficient commercial spaces.'
+    },
+    retail: {
+      heroSubtitle: 'RETAIL SPACES',
+      heroTitle: 'Retail & Showroom Interiors',
+      p1: 'At Design Harmony, we design retail interiors that combine visual appeal, brand identity, and customer experience.',
+      p2: 'Every retail space is thoughtfully planned to attract attention, showcase products effectively, and create an inviting environment.',
+      sec2Tagline: 'COMMERCIAL IMPACT',
+      sec2Title: 'Importance of Effective Retail Interior Design',
+      sec2P1: 'A well-designed retail space can influence how customers move, interact with products, and experience your brand.',
+      sec2P2: 'At Design Harmony, we carefully consider store layout, product displays, lighting, storage, and customer flow.'
+    },
+    consultation: {
+      heroSubtitle: 'OUR SERVICES',
+      heroTitle: 'Project Management Consultancy',
+      p1: 'At Design Harmony, our Project Management Consultancy ensures that your interior project moves smoothly from planning to final execution.',
+      p2: 'We coordinate between designers, contractors, vendors, and site teams while keeping a close watch on quality, timelines, and budget.',
+      sec2Tagline: 'WHY PMC MATTERS',
+      sec2Title: 'Importance of Professional Project Management',
+      sec2P1: 'Successful interiors require more than a great design—they require proper planning, coordination, supervision, and quality control.',
+      sec2P2: 'Our consultancy covers site coordination, vendor management, work scheduling, quality monitoring, and execution supervision.'
+    },
+    vastu: {
+      heroSubtitle: 'ENERGY HARMONY',
+      heroTitle: 'Vastu Shastra Consultancy',
+      p1: 'Vastu Shastra focuses on creating balance between human living spaces and natural energies.',
+      p2: 'At Design Harmony, our Vastu Consultancy offers practical advice to optimize energy flow, orientation, and layout in your home or office.',
+      sec2Tagline: 'FOUNDATION OF VASTU',
+      sec2Title: 'Importance of Directions in Vastu',
+      sec2P1: 'Directions are one of the most important foundations of Vastu Shastra, associated with different elements and aspects of life.',
+      sec2P2: 'Our Vastu analysis studies how these directions interact with your main entrance, kitchen, bedrooms, work areas, and furniture placement.'
+    },
+    dob: {
+      heroSubtitle: 'NUMEROLOGY MATRIX',
+      heroTitle: 'Date of Birth (D.O.B) Analysis',
+      p1: 'D.O.B Analysis uses your date of birth and numerology matrix to help you understand personal strengths, life patterns, and directional alignments.',
+      p2: 'Our analysis provides meaningful guidance to align your personal and professional spaces with your natural tendencies.',
+      sec2Tagline: 'NUMEROLOGY INSIGHTS',
+      sec2Title: 'Importance of Numbers in D.O.B Analysis',
+      sec2P1: 'Every number is traditionally associated with certain characteristics and influences in your birth date.',
+      sec2P2: 'A complete analysis can offer insights related to personality, career direction, financial patterns, decision-making, and personal growth.'
+    }
+  };
+
+  function loadSubpageEditor() {
+    if (!subpageSelect) return;
+    const selectedKey = subpageSelect.value || 'residential';
+    const savedData = JSON.parse(localStorage.getItem(`dh_subpage_${selectedKey}`) || 'null');
+    const data = savedData || defaultSubpagesData[selectedKey] || defaultSubpagesData.residential;
+
+    document.getElementById('subpage-hero-subtitle').value = data.heroSubtitle || '';
+    document.getElementById('subpage-hero-title').value = data.heroTitle || '';
+    document.getElementById('subpage-p1').value = data.p1 || '';
+    document.getElementById('subpage-p2').value = data.p2 || '';
+    document.getElementById('subpage-sec2-tagline').value = data.sec2Tagline || '';
+    document.getElementById('subpage-sec2-title').value = data.sec2Title || '';
+    document.getElementById('subpage-sec2-p1').value = data.sec2P1 || '';
+    document.getElementById('subpage-sec2-p2').value = data.sec2P2 || '';
+
+    const previewContainer = document.getElementById('subpage-current-img-preview');
+    if (previewContainer && data.img) {
+      previewContainer.innerHTML = `<img src="${data.img}" style="max-height: 100px; border-radius: 6px; border: 1px solid var(--primary-gold);">`;
+    } else if (previewContainer) {
+      previewContainer.innerHTML = '';
+    }
+  }
+
+  if (subpageSelect) {
+    subpageSelect.addEventListener('change', loadSubpageEditor);
+  }
+
+  if (subpageEditorForm) {
+    subpageEditorForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const selectedKey = subpageSelect ? subpageSelect.value : 'residential';
+      const existing = JSON.parse(localStorage.getItem(`dh_subpage_${selectedKey}`) || 'null') || defaultSubpagesData[selectedKey] || {};
+
+      const fileInput = document.getElementById('subpage-img-input');
+      let imgUrl = existing.img || '';
+      if (fileInput && fileInput.files[0]) {
+        imgUrl = await uploadImageHelper(fileInput.files[0], 'subpage-hero');
+      }
+
+      const updatedObj = {
+        heroSubtitle: document.getElementById('subpage-hero-subtitle').value.trim(),
+        heroTitle: document.getElementById('subpage-hero-title').value.trim(),
+        p1: document.getElementById('subpage-p1').value.trim(),
+        p2: document.getElementById('subpage-p2').value.trim(),
+        img: imgUrl,
+        sec2Tagline: document.getElementById('subpage-sec2-tagline').value.trim(),
+        sec2Title: document.getElementById('subpage-sec2-title').value.trim(),
+        sec2P1: document.getElementById('subpage-sec2-p1').value.trim(),
+        sec2P2: document.getElementById('subpage-sec2-p2').value.trim()
+      };
+
+      localStorage.setItem(`dh_subpage_${selectedKey}`, JSON.stringify(updatedObj));
+      loadSubpageEditor();
+      showToast(`Saved ${selectedKey.toUpperCase()} subpage content!`);
     });
   }
 
