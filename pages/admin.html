@@ -64,7 +64,7 @@
 
         <nav class="admin-nav">
           <button type="button" class="admin-nav-item active" data-tab="tab-services">Services Control Center</button>
-          <button type="button" class="admin-nav-item" data-tab="tab-subpages">Service Subpages Editor</button>
+          <button type="button" class="admin-nav-item" data-tab="tab-subpages">Page Content Editor</button>
           <button type="button" class="admin-nav-item" data-tab="tab-logos">Client Logos</button>
           <button type="button" class="admin-nav-item" data-tab="tab-projects">Projects Showcase</button>
           <button type="button" class="admin-nav-item" data-tab="tab-content">Website Copy</button>
@@ -134,36 +134,40 @@
           </div>
         </section>
 
-        <!-- Tab 2: Service Subpages Content Editor -->
+        <!-- Tab 2: Full-Site Page Content Editor -->
         <section id="tab-subpages" class="admin-tab-pane" style="display: none;">
           <div class="admin-card">
             <div class="admin-card-header">
-              <h3 class="admin-card-title">Edit Service Subpage Content</h3>
+              <h3 class="admin-card-title">Edit Page Content & Images</h3>
             </div>
             
             <div class="form-group" style="margin-bottom: 28px;">
-              <label class="form-label" style="font-size: 0.95rem; color: var(--primary-gold);">Select Service Subpage to Edit *</label>
-              <select id="subpage-select" class="form-control" style="font-size: 1rem; padding: 14px;">
-                <option value="residential">Residential Interiors (pages/residential-interiors.html)</option>
-                <option value="corporate">Corporate Interiors (pages/corporate-interiors.html)</option>
-                <option value="retail">Retail Interiors (pages/retail-interiors.html)</option>
-                <option value="consultation">Project Management Consultancy (pages/consultation.html)</option>
-                <option value="vastu">Vastu Consultancy (pages/vastu-consultancy.html)</option>
-                <option value="dob">DOB Analysis (pages/dob-analysis.html)</option>
+              <label class="form-label" style="font-size: 0.95rem; color: var(--primary-gold);">Select Website Page to Edit *</label>
+              <select id="subpage-select" class="form-control" style="font-size: 1.05rem; padding: 16px; border: 2px solid var(--primary-gold) !important;">
+                <option value="residential">1. Residential Interiors Subpage (pages/residential-interiors.html)</option>
+                <option value="corporate">2. Corporate Interiors Subpage (pages/corporate-interiors.html)</option>
+                <option value="retail">3. Retail Interiors Subpage (pages/retail-interiors.html)</option>
+                <option value="consultation">4. Project Management Consultancy Subpage (pages/consultation.html)</option>
+                <option value="vastu">5. Vastu Consultancy Subpage (pages/vastu-consultancy.html)</option>
+                <option value="dob">6. DOB Analysis Subpage (pages/dob-analysis.html)</option>
+                <option value="home">7. Home Page (index.html)</option>
+                <option value="about">8. About Us Page (pages/about.html)</option>
+                <option value="projects">9. Projects Page (pages/projects.html)</option>
+                <option value="contact">10. Contact Us Page (pages/contact.html)</option>
               </select>
             </div>
 
             <form id="subpage-editor-form">
-              <h4 style="color: var(--primary-gold); margin-bottom: 16px; border-bottom: 1px solid rgba(198, 146, 20, 0.2); padding-bottom: 8px;">Hero Section & Main Overview</h4>
+              <h4 style="color: var(--primary-gold); margin-bottom: 16px; border-bottom: 1px solid rgba(198, 146, 20, 0.2); padding-bottom: 8px;">Section 1: Hero & Main Header Content</h4>
               
               <div class="form-group">
-                <label class="form-label">Subpage Tagline / Subtitle</label>
-                <input type="text" id="subpage-hero-subtitle" class="form-control" placeholder="OUR SERVICES">
+                <label class="form-label">Tagline / Subtitle (e.g. BESPOKE LIVING SPACES)</label>
+                <input type="text" id="subpage-hero-subtitle" class="form-control" placeholder="BESPOKE LIVING SPACES">
               </div>
 
               <div class="form-group">
-                <label class="form-label">Main Heading</label>
-                <input type="text" id="subpage-hero-title" class="form-control" placeholder="Turning Your Design Vision into a Well-Executed Space">
+                <label class="form-label">Main Heading / Title (e.g. Creating Homes That Reflect Your Lifestyle)</label>
+                <input type="text" id="subpage-hero-title" class="form-control" placeholder="Creating Homes That Reflect Your Lifestyle">
               </div>
 
               <div class="form-group">
@@ -177,21 +181,21 @@
               </div>
 
               <div class="form-group">
-                <label class="form-label">Upload Hero Featured Image</label>
+                <label class="form-label">Upload Hero / Main Featured Image</label>
                 <input type="file" id="subpage-img-input" class="form-control" accept="image/*">
                 <div id="subpage-current-img-preview" style="margin-top: 10px;"></div>
               </div>
 
-              <h4 style="color: var(--primary-gold); margin-top: 32px; margin-bottom: 16px; border-bottom: 1px solid rgba(198, 146, 20, 0.2); padding-bottom: 8px;">Section 2: Importance & Details</h4>
+              <h4 style="color: var(--primary-gold); margin-top: 32px; margin-bottom: 16px; border-bottom: 1px solid rgba(198, 146, 20, 0.2); padding-bottom: 8px;">Section 2: Secondary Content & Details</h4>
 
               <div class="form-group">
-                <label class="form-label">Section 2 Tagline</label>
-                <input type="text" id="subpage-sec2-tagline" class="form-control" placeholder="EXCELLENCE IN EXECUTION">
+                <label class="form-label">Section 2 Tagline / Subtitle (e.g. DESIGN PHILOSOPHY)</label>
+                <input type="text" id="subpage-sec2-tagline" class="form-control" placeholder="DESIGN PHILOSOPHY">
               </div>
 
               <div class="form-group">
-                <label class="form-label">Section 2 Heading</label>
-                <input type="text" id="subpage-sec2-title" class="form-control" placeholder="Importance of Professional Management">
+                <label class="form-label">Section 2 Heading (e.g. Importance of Thoughtful Interior Design)</label>
+                <input type="text" id="subpage-sec2-title" class="form-control" placeholder="Importance of Thoughtful Interior Design">
               </div>
 
               <div class="form-group">
@@ -204,7 +208,7 @@
                 <textarea id="subpage-sec2-p2" class="form-control" rows="4" placeholder="Second paragraph..."></textarea>
               </div>
 
-              <button type="submit" class="btn btn-gold" style="padding: 16px 32px; font-size: 1rem; margin-top: 20px;">SAVE & APPLY SUBPAGE CONTENT</button>
+              <button type="submit" class="btn btn-gold" style="padding: 16px 32px; font-size: 1rem; margin-top: 20px;">SAVE & APPLY PAGE CONTENT</button>
             </form>
           </div>
         </section>

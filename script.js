@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  /* Dynamic Sync for Admin-Edited Service Subpages */
+  /* Dynamic Sync for Admin-Edited Page Content across all 10 Pages */
   const currentPath = window.location.pathname.toLowerCase();
   let subpageKey = '';
   if (currentPath.includes('residential-interiors')) subpageKey = 'residential';
@@ -257,40 +257,101 @@ document.addEventListener('DOMContentLoaded', () => {
   else if (currentPath.includes('consultation')) subpageKey = 'consultation';
   else if (currentPath.includes('vastu-consultancy')) subpageKey = 'vastu';
   else if (currentPath.includes('dob-analysis')) subpageKey = 'dob';
+  else if (currentPath.includes('about')) subpageKey = 'about';
+  else if (currentPath.includes('projects')) subpageKey = 'projects';
+  else if (currentPath.includes('contact')) subpageKey = 'contact';
+  else if (currentPath.endsWith('index.html') || currentPath.endsWith('/') || currentPath === '' || currentPath.includes('index')) subpageKey = 'home';
 
   if (subpageKey) {
     const subpageDataStr = localStorage.getItem(`dh_subpage_${subpageKey}`);
     if (subpageDataStr) {
       try {
         const d = JSON.parse(subpageDataStr);
-        const heroSub = document.querySelector('.page-hero-subtitle');
-        const heroTitle = document.querySelector('.page-hero-title');
-        const sec1Tagline = document.querySelector('.subpage-section:nth-of-type(1) .section-tagline');
-        const sec1Title = document.querySelector('.subpage-section:nth-of-type(1) .about-title');
-        const sec1Ps = document.querySelectorAll('.subpage-section:nth-of-type(1) .subpage-text-body p');
-        const sec1Img = document.querySelector('.subpage-hero-img');
 
-        const sec2Tagline = document.querySelector('.subpage-section:nth-of-type(2) .section-tagline');
-        const sec2Title = document.querySelector('.subpage-section:nth-of-type(2) .about-title');
-        const sec2Ps = document.querySelectorAll('.subpage-section:nth-of-type(2) .subpage-text-body p');
+        // Helper to adjust relative paths for root vs subpages
+        const isSubDir = currentPath.includes('/pages/');
+        const fixImgPath = (url) => {
+          if (!url) return '';
+          if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
+          if (isSubDir) {
+            return url.startsWith('../') ? url : '../' + url.replace(/^\//, '');
+          } else {
+            return url.replace(/^\.\.\//, '');
+          }
+        };
+
+        // 1. Hero Elements
+        const heroSub = document.querySelector('.page-hero-subtitle') || document.querySelector('.hero-badge');
+        const heroTitle = document.querySelector('.page-hero-title') || document.querySelector('.hero-title');
+        const heroDesc = document.querySelector('.page-hero-desc') || document.querySelector('.hero-description');
+        const heroBg = document.querySelector('.hero-bg');
 
         if (heroSub && d.heroSubtitle) heroSub.textContent = d.heroSubtitle;
-        if (heroTitle && d.heroTitle) heroTitle.textContent = d.heroTitle;
+        if (heroTitle && d.heroTitle) {
+          if (heroTitle.classList.contains('hero-title') && d.heroTitle.includes('as They')) {
+            heroTitle.innerHTML = d.heroTitle;
+          } else {
+            heroTitle.textContent = d.heroTitle;
+          }
+        }
+        if (heroDesc && d.p1) heroDesc.textContent = d.p1;
+        if (heroBg && d.img) heroBg.style.backgroundImage = `url('${fixImgPath(d.img)}')`;
+
+        // 2. Section 1 (Story / Main Content)
+        const sec1Tagline = document.querySelector('.subpage-section:nth-of-type(1) .section-tagline') || document.querySelector('.about-section .section-tagline');
+        const sec1Title = document.querySelector('.subpage-section:nth-of-type(1) .about-title') || document.querySelector('.about-section .about-title');
+        const sec1Ps = document.querySelectorAll('.subpage-section:nth-of-type(1) .subpage-text-body p, .about-section .about-text-body p');
+        const sec1Img = document.querySelector('.subpage-hero-img') || document.querySelector('.about-portrait-img');
+
         if (sec1Tagline && d.heroSubtitle) sec1Tagline.textContent = d.heroSubtitle;
         if (sec1Title && d.heroTitle) sec1Title.textContent = d.heroTitle;
-
         if (sec1Ps.length > 0 && d.p1) sec1Ps[0].textContent = d.p1;
         if (sec1Ps.length > 1 && d.p2) sec1Ps[1].textContent = d.p2;
-        if (sec1Img && d.img) sec1Img.src = d.img;
+        if (sec1Img && d.img) sec1Img.src = fixImgPath(d.img);
+
+        // 3. Section 2 (Philosophy / Details / CTA / Form Headers)
+        const sec2Tagline = document.querySelector('.subpage-section:nth-of-type(2) .section-tagline') || document.querySelector('.cta-text-content .cta-tagline');
+        const sec2Title = document.querySelector('.subpage-section:nth-of-type(2) .about-title') || document.querySelector('.subpage-section:nth-of-type(2) .section-title') || document.querySelector('.cta-text-content .cta-title');
+        const sec2Ps = document.querySelectorAll('.subpage-section:nth-of-type(2) .subpage-text-body p');
+        const ctaDesc = document.querySelector('.cta-text-content .cta-description');
 
         if (sec2Tagline && d.sec2Tagline) sec2Tagline.textContent = d.sec2Tagline;
         if (sec2Title && d.sec2Title) sec2Title.textContent = d.sec2Title;
         if (sec2Ps.length > 0 && d.sec2P1) sec2Ps[0].textContent = d.sec2P1;
         if (sec2Ps.length > 1 && d.sec2P2) sec2Ps[1].textContent = d.sec2P2;
+        if (ctaDesc && d.sec2P1 && !sec2Ps.length) ctaDesc.textContent = d.sec2P1;
+
+        // Contact Page Form Header Sync
+        if (subpageKey === 'contact') {
+          const formCardTitle = document.querySelector('.form-card-title');
+          const formCardSub = document.querySelector('.form-card-subtitle');
+          if (formCardTitle && d.sec2Title) formCardTitle.textContent = d.sec2Title;
+          if (formCardSub && d.sec2P1) formCardSub.textContent = d.sec2P1;
+        }
       } catch (e) {
         console.error('Error syncing subpage content:', e);
       }
     }
+  }
+
+  /* Dynamic Sync for Site-Wide Contact Info Copy */
+  const siteContentStr = localStorage.getItem('dh_site_content');
+  if (siteContentStr) {
+    try {
+      const siteContent = JSON.parse(siteContentStr);
+      if (siteContent.phone) {
+        document.querySelectorAll('a[href^="tel:"]').forEach(el => {
+          el.href = `tel:${siteContent.phone.replace(/\s+/g, '')}`;
+          el.textContent = siteContent.phone;
+        });
+      }
+      if (siteContent.email) {
+        document.querySelectorAll('a[href^="mailto:"]').forEach(el => {
+          el.href = `mailto:${siteContent.email}`;
+          el.textContent = siteContent.email;
+        });
+      }
+    } catch (e) {}
   }
 
   /* Dynamic Sync for Admin-Uploaded Client Logos Ticker */

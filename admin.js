@@ -306,30 +306,33 @@
 
   const defaultSubpagesData = {
     residential: {
-      heroSubtitle: 'OUR SERVICES',
-      heroTitle: 'Residential Interior Design',
-      p1: 'At Design Harmony, we transform residential spaces into elegant, functional homes tailored to your lifestyle. From living rooms and bedrooms to kitchens and complete home interiors, we carefully plan every detail.',
-      p2: 'Our designs combine aesthetics with practicality, creating environments that feel comfortable, timeless, and uniquely yours.',
+      heroSubtitle: 'BESPOKE LIVING SPACES',
+      heroTitle: 'Creating Homes That Reflect Your Lifestyle',
+      p1: 'At Design Harmony, we create thoughtfully designed residential interiors that bring together comfort, functionality, and aesthetics. Every home is unique, so our designs are personalized according to your lifestyle, preferences, space requirements, and everyday needs.',
+      p2: 'From living rooms and bedrooms to kitchens, wardrobes, and complete home interiors, we carefully plan every detail to create spaces that are practical, elegant, and truly feel like home.',
+      img: '../assets/residential interior.jpeg',
       sec2Tagline: 'DESIGN PHILOSOPHY',
       sec2Title: 'Importance of Thoughtful Interior Design',
-      sec2P1: 'A well-designed home is not just about beautiful finishes—it is about creating a space that works effortlessly for the people living in it.',
-      sec2P2: 'At Design Harmony, we balance creative design with smart space utilization, ensuring every corner serves a purpose while maintaining a cohesive aesthetic.'
+      sec2P1: 'A well-designed home is not just about beautiful finishes—it is about creating a space that works effortlessly for the people living in it. Proper space planning, lighting, colours, furniture, storage, materials, and finishes can completely transform the way a home looks and functions.',
+      sec2P2: 'At Design Harmony, we balance creative design with smart space utilization, ensuring every corner serves a purpose while maintaining a cohesive and timeless aesthetic throughout your home.'
     },
     corporate: {
       heroSubtitle: 'COMMERCIAL DESIGN',
       heroTitle: 'Corporate Interior Design',
       p1: 'At Design Harmony, we create professional, modern, and efficient commercial spaces tailored to your business needs.',
       p2: 'From corporate offices and executive suites to reception areas, our designs reflect your brand identity while enhancing employee comfort.',
+      img: '../assets/corporate interior.jpeg',
       sec2Tagline: 'BUSINESS VALUE',
       sec2Title: 'Importance of Effective Commercial Interior Design',
       sec2P1: 'A well-designed commercial space can improve productivity, workflow, space utilization, and customer experience.',
-      sec2P2: 'At Design Harmony, we carefully consider space planning, lighting, furniture, storage, and circulation to create efficient commercial spaces.'
+      sec2P2: 'At Design Harmony, we carefully consider space planning, lighting, furniture, storage, materials, and circulation to create efficient commercial spaces.'
     },
     retail: {
       heroSubtitle: 'RETAIL SPACES',
       heroTitle: 'Retail & Showroom Interiors',
       p1: 'At Design Harmony, we design retail interiors that combine visual appeal, brand identity, and customer experience.',
       p2: 'Every retail space is thoughtfully planned to attract attention, showcase products effectively, and create an inviting environment.',
+      img: '../assets/retail interior.jpeg',
       sec2Tagline: 'COMMERCIAL IMPACT',
       sec2Title: 'Importance of Effective Retail Interior Design',
       sec2P1: 'A well-designed retail space can influence how customers move, interact with products, and experience your brand.',
@@ -340,6 +343,7 @@
       heroTitle: 'Project Management Consultancy',
       p1: 'At Design Harmony, our Project Management Consultancy ensures that your interior project moves smoothly from planning to final execution.',
       p2: 'We coordinate between designers, contractors, vendors, and site teams while keeping a close watch on quality, timelines, and budget.',
+      img: '../assets/project managment consultancy.jpeg',
       sec2Tagline: 'WHY PMC MATTERS',
       sec2Title: 'Importance of Professional Project Management',
       sec2P1: 'Successful interiors require more than a great design—they require proper planning, coordination, supervision, and quality control.',
@@ -350,6 +354,7 @@
       heroTitle: 'Vastu Shastra Consultancy',
       p1: 'Vastu Shastra focuses on creating balance between human living spaces and natural energies.',
       p2: 'At Design Harmony, our Vastu Consultancy offers practical advice to optimize energy flow, orientation, and layout in your home or office.',
+      img: '../assets/vastu consultancy.jpeg',
       sec2Tagline: 'FOUNDATION OF VASTU',
       sec2Title: 'Importance of Directions in Vastu',
       sec2P1: 'Directions are one of the most important foundations of Vastu Shastra, associated with different elements and aspects of life.',
@@ -360,10 +365,55 @@
       heroTitle: 'Date of Birth (D.O.B) Analysis',
       p1: 'D.O.B Analysis uses your date of birth and numerology matrix to help you understand personal strengths, life patterns, and directional alignments.',
       p2: 'Our analysis provides meaningful guidance to align your personal and professional spaces with your natural tendencies.',
+      img: '../assets/D.O.B analysis.jpeg',
       sec2Tagline: 'NUMEROLOGY INSIGHTS',
       sec2Title: 'Importance of Numbers in D.O.B Analysis',
       sec2P1: 'Every number is traditionally associated with certain characteristics and influences in your birth date.',
       sec2P2: 'A complete analysis can offer insights related to personality, career direction, financial patterns, decision-making, and personal growth.'
+    },
+    home: {
+      heroSubtitle: 'DESIGN HARMONY',
+      heroTitle: 'Creating Spaces That Feel as Good as They Look.',
+      p1: 'At Design Harmony, we create thoughtful, functional and timeless spaces designed around the way you live and work.',
+      p2: 'From residential interiors to corporate environments and Vastu consultancy, every project is tailored to reflect your unique lifestyle.',
+      img: '../assets/Untitled design.jpeg',
+      sec2Tagline: 'ABOUT ANURADHA',
+      sec2Title: 'Experience Meets Thoughtful Design',
+      sec2P1: 'Hi, I\'m Anuradha, an interior designer with 20+ years of experience creating thoughtful, functional and timeless spaces.',
+      sec2P2: 'From residential homes to commercial projects, my focus has always been to design spaces that reflect your lifestyle while balancing comfort, aesthetics, and practicality.'
+    },
+    about: {
+      heroSubtitle: 'ABOUT DESIGN HARMONY',
+      heroTitle: 'Experience Meets Thoughtful Design',
+      p1: 'Creating functional, elegant, and harmonious spaces tailored around the way you live and work.',
+      p2: 'Founded by Anuradha Chadha, Design Harmony stands at the intersection of aesthetic sophistication, ergonomic practical utility, and spatial science.',
+      img: '../Maam\'s Image.png',
+      sec2Tagline: 'OUR STORY',
+      sec2Title: 'Designing Spaces That Reflect Your Soul',
+      sec2P1: 'Founded by Anuradha Chadha, Design Harmony stands at the intersection of aesthetic sophistication, ergonomic practical utility, and ancient spatial science. With over 20 years of hands-on experience in interior design, project management, Vastu Shastra, and Date of Birth numerology, Anuradha brings a holistic perspective to every project.',
+      sec2P2: 'We believe that a space is not merely four walls filled with furniture. It is a living environment that shapes your mindset, energy levels, personal well-being, and professional productivity.'
+    },
+    projects: {
+      heroSubtitle: 'OUR PORTFOLIO',
+      heroTitle: 'Featured Works & Design Showcase',
+      p1: 'Browse through our completed luxury residences, commercial office spaces, boutique retail displays, and Vastu transformations.',
+      p2: 'Every project showcases our attention to detail, quality craftsmanship, and client-first approach to space planning.',
+      img: '../projects/Living Room.jpg',
+      sec2Tagline: 'INNOVATIVE DESIGN SOLUTIONS',
+      sec2Title: 'Have a Project in Mind?',
+      sec2P1: 'Let\'s discuss how we can turn your space into a masterpiece. From initial consultation to final delivery, we manage every step.',
+      sec2P2: 'Contact our team today to schedule your personalized design walkthrough or consultation session.'
+    },
+    contact: {
+      heroSubtitle: 'GET IN TOUCH',
+      heroTitle: 'Start Your Project Journey',
+      p1: 'We would love to hear about your space, project requirements, or schedule a personal session with Anuradha Chadha.',
+      p2: 'Reach out to us via phone, email, or by submitting your inquiry form below. We respond to all consultations within 24 hours.',
+      img: '../assets/logo.jpeg',
+      sec2Tagline: 'DIRECT CONTACT INFO',
+      sec2Title: 'Book Your Consultation',
+      sec2P1: 'Select your required consultation service and fill out the details. Our team will get in touch with you shortly.',
+      sec2P2: 'Office: B03/8, Block B, Kalkaji, New Delhi, 110019. Phone: +91 9811234164.'
     }
   };
 
