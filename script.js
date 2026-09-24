@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  /* Dynamic Sync for Admin-Edited Page Content across all 10 Pages */
+  /* Dynamic Sync for Admin-Edited Page Content across all 10 Pages & Custom Subpages */
   const currentPath = window.location.pathname.toLowerCase();
   let subpageKey = '';
   if (currentPath.includes('residential-interiors')) subpageKey = 'residential';
@@ -305,6 +305,74 @@ document.addEventListener('DOMContentLoaded', () => {
   else if (currentPath.includes('projects')) subpageKey = 'projects';
   else if (currentPath.includes('contact')) subpageKey = 'contact';
   else if (currentPath.endsWith('index.html') || currentPath.endsWith('/') || currentPath === '' || currentPath.includes('index')) subpageKey = 'home';
+
+  /* Dynamic Custom Service Page (service-detail.html) Renderer */
+  if (currentPath.includes('service-detail')) {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const serviceQuery = urlParams.get('service') || urlParams.get('id') || urlParams.get('title') || '';
+      
+      const customServices = JSON.parse(localStorage.getItem('dh_custom_services') || '[]');
+      let matchedService = customServices.find(s => {
+        const slug = (s.title || '').toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-');
+        return slug === serviceQuery.toLowerCase() || (s.link || '').includes(serviceQuery);
+      });
+
+      if (!matchedService && customServices.length > 0) {
+        matchedService = customServices[0];
+      }
+
+      const subKey = matchedService ? (matchedService.title || '').toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-') : serviceQuery;
+      const subData = JSON.parse(localStorage.getItem(`dh_subpage_${subKey}`) || 'null') || {};
+
+      const title = subData.heroTitle || (matchedService ? matchedService.title : 'Service Detail');
+      const heroSub = subData.heroSubtitle || 'OUR SERVICES';
+      const p1 = subData.p1 || (matchedService ? matchedService.desc : '');
+      const p2 = subData.p2 || '';
+      const img = subData.img || (matchedService ? matchedService.img : '../assets/logo.jpeg');
+      const sec2Tagline = subData.sec2Tagline || 'DESIGN PHILOSOPHY';
+      const sec2Title = subData.sec2Title || 'Importance of Thoughtful Interior Design';
+      const sec2P1 = subData.sec2P1 || 'A well-designed space is not just about beautiful finishes—it is about creating an environment that works effortlessly.';
+      const sec2P2 = subData.sec2P2 || 'At Design Harmony, we balance creative design with smart space utilization.';
+
+      document.title = `${title} | Design Harmony`;
+      const heroSubEl = document.querySelector('.page-hero-subtitle');
+      const heroTitleEl = document.querySelector('.page-hero-title');
+      const heroDescEl = document.querySelector('.page-hero-desc');
+      const sec1Tagline = document.querySelector('.subpage-section:nth-of-type(1) .section-tagline');
+      const sec1Title = document.querySelector('.subpage-section:nth-of-type(1) .about-title');
+      const sec1Ps = document.querySelectorAll('.subpage-section:nth-of-type(1) .subpage-text-body p');
+      const sec1Img = document.querySelector('.subpage-hero-img');
+      const sec2TaglineEl = document.querySelector('.subpage-section:nth-of-type(2) .section-tagline');
+      const sec2TitleEl = document.querySelector('.subpage-section:nth-of-type(2) .about-title');
+      const sec2Ps = document.querySelectorAll('.subpage-section:nth-of-type(2) .subpage-text-body p');
+      const formCardTitle = document.querySelector('.subpage-form-card .form-card-title');
+
+      if (heroSubEl) heroSubEl.textContent = heroSub;
+      if (heroTitleEl) heroTitleEl.textContent = title;
+      if (heroDescEl && p1) heroDescEl.textContent = p1;
+
+      if (sec1Tagline) sec1Tagline.textContent = heroSub;
+      if (sec1Title) sec1Title.textContent = title;
+      if (sec1Ps.length > 0 && p1) sec1Ps[0].textContent = p1;
+      if (sec1Ps.length > 1) sec1Ps[1].textContent = p2;
+      if (sec1Img && img) {
+        if (img.startsWith('http') || img.startsWith('data:')) {
+          sec1Img.src = img;
+        } else {
+          sec1Img.src = img.startsWith('../') ? img : '../' + img;
+        }
+      }
+
+      if (sec2TaglineEl) sec2TaglineEl.textContent = sec2Tagline;
+      if (sec2TitleEl) sec2TitleEl.textContent = sec2Title;
+      if (sec2Ps.length > 0) sec2Ps[0].textContent = sec2P1;
+      if (sec2Ps.length > 1) sec2Ps[1].textContent = sec2P2;
+      if (formCardTitle) formCardTitle.textContent = `Book ${title} Consultancy`;
+    } catch (err) {
+      console.error('Error rendering service detail:', err);
+    }
+  }
 
   if (subpageKey) {
     const subpageDataStr = localStorage.getItem(`dh_subpage_${subpageKey}`);

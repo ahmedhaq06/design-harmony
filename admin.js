@@ -239,7 +239,7 @@
   }
 
   function generateServiceLink(title) {
-    if (!title) return 'pages/service.html';
+    if (!title) return 'pages/service-detail.html?service=custom';
     const t = title.toLowerCase().trim();
     if (t.includes('residential')) return 'pages/residential-interiors.html';
     if (t.includes('corporate')) return 'pages/corporate-interiors.html';
@@ -252,7 +252,7 @@
       .replace(/[^\w\s-]/g, '')
       .replace(/[\s_-]+/g, '-')
       .replace(/^-+|-+$/g, '');
-    return `pages/${slug || 'service'}.html`;
+    return `pages/service-detail.html?service=${slug || 'custom'}`;
   }
 
   window.editService = function (index) {
