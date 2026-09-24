@@ -73,52 +73,94 @@
     <section class="subpage-section">
       <div class="container">
         <div class="subpage-grid-2col">
-          <!-- Left: Main Contact Form -->
+          <!-- Left: Dual Form Selector Card -->
           <div class="form-card">
-            <h2 class="form-card-title">Send Us a Message</h2>
-            <p class="form-card-subtitle">Fill out the form below and our team will get back to you within 24 hours.</p>
+            <h2 class="form-card-title">Book Your Consultation</h2>
+            <p class="form-card-subtitle">Select your required consultation service below:</p>
 
-            <form class="js-contact-form">
+            <!-- Form Selection Toggle -->
+            <div class="consult-form-tabs">
+              <button type="button" class="consult-tab-btn active" id="tab-btn-interior" data-target="form-interior">
+                <span class="tab-title">Interior Consultancy</span>
+                <span class="tab-sub">Residence, Commercial, Retail, PMC</span>
+                <span class="tab-fee">Fee: ₹2,100/-</span>
+              </button>
+
+              <button type="button" class="consult-tab-btn" id="tab-btn-vastu" data-target="form-vastu">
+                <span class="tab-title">Vastu & D.O.B Consultancy</span>
+                <span class="tab-sub">Vastu Shastra & Date of Birth</span>
+                <span class="tab-fee">Fee: ₹5,100/-</span>
+              </button>
+            </div>
+
+            <!-- Form 1: Interior Consultancy -->
+            <form id="form-interior" class="consultation-form active">
               <div class="form-row">
                 <div class="form-group">
-                  <label class="form-label">Full Name *</label>
-                  <input type="text" class="form-control" placeholder="e.g. Rahul Sharma" required>
+                  <label class="form-label">Name *</label>
+                  <input type="text" name="name" class="form-control" placeholder="e.g. Rahul Sharma" required>
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Phone Number *</label>
-                  <input type="tel" class="form-control" placeholder="+91 9811234164" required>
+                  <label class="form-label">Contact No. *</label>
+                  <input type="tel" name="contact" class="form-control" placeholder="+91 9811234164" required>
                 </div>
               </div>
 
               <div class="form-row">
                 <div class="form-group">
                   <label class="form-label">Email Address *</label>
-                  <input type="email" class="form-control" placeholder="name@example.com" required>
+                  <input type="email" name="email" class="form-control" placeholder="name@example.com" required>
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Service Interested In</label>
-                  <select class="form-select">
-                    <option value="Residential">Residential Interiors</option>
-                    <option value="Corporate">Corporate Interiors</option>
-                    <option value="Retail">Retail Interiors</option>
-                    <option value="Vastu">Vastu Consultancy</option>
-                    <option value="DOB">DOB Numerology Analysis</option>
-                    <option value="Consultation">Personal Consultation</option>
-                  </select>
+                  <label class="form-label">Project Size (Sq ft) *</label>
+                  <input type="text" name="project_size" class="form-control" placeholder="e.g. 1800 Sq ft" required>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Project Budget *</label>
+                  <input type="text" name="project_budget" class="form-control" placeholder="e.g. ₹15 - 20 Lakhs" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Location *</label>
+                  <input type="text" name="location" class="form-control" placeholder="e.g. Kalkaji, New Delhi" required>
                 </div>
               </div>
 
               <div class="form-group">
-                <label class="form-label">Preferred Date & Time (Optional)</label>
-                <input type="text" class="form-control" placeholder="e.g. Next Monday afternoon">
+                <label class="form-label">Good Time to call *</label>
+                <input type="text" name="good_time" class="form-control" placeholder="e.g. Weekdays 4 PM - 6 PM" required>
+              </div>
+
+              <button type="submit" class="btn btn-gold form-submit-btn">PROCEED TO BOOK CONSULTANCY (₹2,100)</button>
+              <div class="form-feedback-msg"></div>
+            </form>
+
+            <!-- Form 2: Vastu Consultancy (Vastu and D.O.B) -->
+            <form id="form-vastu" class="consultation-form" style="display: none;">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Name *</label>
+                  <input type="text" name="name" class="form-control" placeholder="e.g. Rahul Sharma" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Contact No. *</label>
+                  <input type="tel" name="contact" class="form-control" placeholder="+91 9811234164" required>
+                </div>
               </div>
 
               <div class="form-group">
-                <label class="form-label">Project Details / Message *</label>
-                <textarea class="form-control" placeholder="Please describe your project location, timeline, space size, or specific requirements..." required></textarea>
+                <label class="form-label">Date of Birth *</label>
+                <input type="text" name="dob" class="form-control" placeholder="DD/MM/YYYY (e.g. 15/08/1988)" required>
               </div>
 
-              <button type="submit" class="btn btn-gold form-submit-btn">SUBMIT INQUIRY</button>
+              <div class="form-group">
+                <label class="form-label">Challenges *</label>
+                <textarea name="challenges" class="form-control" placeholder="Please describe the spatial, health, career, or financial challenges you are facing..." required></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-gold form-submit-btn">PROCEED TO BOOK VASTU CONSULTANCY (₹5,100)</button>
               <div class="form-feedback-msg"></div>
             </form>
           </div>

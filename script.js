@@ -253,6 +253,75 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /* Consultation Form Switcher & Handling */
+  const tabBtns = document.querySelectorAll('.consult-tab-btn');
+  const consultationForms = document.querySelectorAll('.consultation-form');
+
+  if (tabBtns.length > 0 && consultationForms.length > 0) {
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-target');
+        
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        consultationForms.forEach(f => {
+          if (f.id === targetId) {
+            f.style.display = 'block';
+            f.classList.add('active');
+          } else {
+            f.style.display = 'none';
+            f.classList.remove('active');
+          }
+        });
+      });
+    });
+
+    /* Auto-select form based on URL parameter (?type=vastu or ?type=interior) */
+    const urlParams = new URLSearchParams(window.location.search);
+    const formType = urlParams.get('type') || urlParams.get('form');
+
+    if (formType) {
+      const targetTabId = (formType === 'vastu' || formType === 'dob') ? 'tab-btn-vastu' : 'tab-btn-interior';
+      const targetBtn = document.getElementById(targetTabId);
+      if (targetBtn) {
+        setTimeout(() => {
+          targetBtn.click();
+          const formCard = document.querySelector('.form-card');
+          if (formCard) {
+            formCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 150);
+      }
+    }
+
+    consultationForms.forEach(form => {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const feedback = form.querySelector('.form-feedback-msg');
+        const submitBtn = form.querySelector('.form-submit-btn');
+
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = 'PROCESSING...';
+        }
+
+        setTimeout(() => {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'REQUEST SUBMITTED!';
+          }
+          if (feedback) {
+            feedback.className = 'form-feedback-msg success';
+            feedback.innerHTML = 'Thank you! Your consultation request has been received. Our team will get back to you shortly.';
+            feedback.style.display = 'block';
+          }
+          form.reset();
+        }, 800);
+      });
+    });
+  }
+
   /* Contact Form Interactive Submission Handler */
   const contactForms = document.querySelectorAll('.js-contact-form');
   contactForms.forEach(form => {
