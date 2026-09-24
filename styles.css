@@ -839,9 +839,6 @@ ul {
   animation: marqueeRightToLeft 45s linear infinite;
 }
 
-.clients-marquee-wrapper:hover .clients-marquee-track {
-  animation-play-state: paused;
-}
 
 @keyframes marqueeRightToLeft {
   from {
@@ -865,13 +862,6 @@ ul {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: var(--transition);
-}
-
-.client-logo-item:hover {
-  transform: translateY(-4px);
-  border-color: var(--primary-gold);
-  box-shadow: 0 8px 24px rgba(198, 146, 20, 0.2);
 }
 
 .client-logo-item img {
@@ -880,11 +870,6 @@ ul {
   width: auto;
   height: auto;
   object-fit: contain;
-  transition: var(--transition);
-}
-
-.client-logo-item:hover img {
-  transform: scale(1.06);
 }
 
 .approach-section {
