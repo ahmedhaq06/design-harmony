@@ -101,6 +101,9 @@
             </div>
             <form id="service-form">
               <input type="hidden" id="service-edit-index" value="-1">
+
+              <!-- SECTION 1: CARD SETTINGS -->
+              <h4 class="admin-section-divider">1. Home Page Card Settings</h4>
               <div class="form-row">
                 <div class="form-group">
                   <label class="form-label">Service Title *</label>
@@ -112,15 +115,66 @@
                 </div>
               </div>
               <div class="form-group">
-                <label class="form-label">Short Summary / Description *</label>
-                <textarea id="service-desc" class="form-control" rows="3" placeholder="Homes designed for the way you live. Comfortable, functional and timeless spaces..." required></textarea>
+                <label class="form-label">Home Page Short Summary / Description *</label>
+                <textarea id="service-desc" class="form-control" rows="2" placeholder="Homes designed for the way you live. Comfortable, functional and timeless spaces..." required></textarea>
               </div>
               <div class="form-group">
-                <label class="form-label">Upload Service Card Image *</label>
+                <label class="form-label">Upload Home Service Card Image</label>
                 <input type="file" id="service-img-input" class="form-control" accept="image/*">
-                <small style="color: #b8ac9f; display: block; margin-top: 6px;">Select an image file from your computer or phone. (Required for new service)</small>
+                <div id="service-card-img-preview" style="margin-top: 8px;"></div>
               </div>
-              <button type="submit" id="service-submit-btn" class="btn btn-gold">SAVE & ADD SERVICE</button>
+
+              <!-- SECTION 2: ACTUAL FULL SUBPAGE CONTENT (HERO & OVERVIEW) -->
+              <h4 class="admin-section-divider">2. Actual Service Subpage Content (Hero & Story)</h4>
+              <div class="form-group">
+                <label class="form-label">Subpage Tagline / Subtitle (e.g. BESPOKE LIVING SPACES)</label>
+                <input type="text" id="service-subpage-hero-subtitle" class="form-control" placeholder="BESPOKE LIVING SPACES">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Subpage Main Heading / Title (e.g. Creating Homes That Reflect Your Lifestyle)</label>
+                <input type="text" id="service-subpage-hero-title" class="form-control" placeholder="Creating Homes That Reflect Your Lifestyle">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Subpage Overview Paragraph 1</label>
+                <textarea id="service-subpage-p1" class="form-control" rows="3" placeholder="At Design Harmony, we create thoughtfully designed residential interiors..."></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Subpage Overview Paragraph 2</label>
+                <textarea id="service-subpage-p2" class="form-control" rows="3" placeholder="From living rooms and bedrooms to kitchens, wardrobes..."></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Upload Subpage Main Featured Image</label>
+                <input type="file" id="service-subpage-img-input" class="form-control" accept="image/*">
+                <div id="service-subpage-img-preview" style="margin-top: 8px;"></div>
+              </div>
+
+              <!-- SECTION 3: ACTUAL FULL SUBPAGE CONTENT (SECTION 2 PHILOSOPHY / DETAILS) -->
+              <h4 class="admin-section-divider">3. Service Subpage Secondary Details (Philosophy / Impact)</h4>
+              <div class="form-group">
+                <label class="form-label">Section 2 Tagline / Subtitle (e.g. DESIGN PHILOSOPHY)</label>
+                <input type="text" id="service-subpage-sec2-tagline" class="form-control" placeholder="DESIGN PHILOSOPHY">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Section 2 Heading (e.g. Importance of Thoughtful Interior Design)</label>
+                <input type="text" id="service-subpage-sec2-title" class="form-control" placeholder="Importance of Thoughtful Interior Design">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Section 2 Paragraph 1</label>
+                <textarea id="service-subpage-sec2-p1" class="form-control" rows="3" placeholder="A well-designed home is not just about beautiful finishes..."></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Section 2 Paragraph 2</label>
+                <textarea id="service-subpage-sec2-p2" class="form-control" rows="3" placeholder="At Design Harmony, we balance creative design with smart space utilization..."></textarea>
+              </div>
+
+              <button type="submit" id="service-submit-btn" class="btn btn-gold" style="width: 100%; padding: 16px; font-size: 1.05rem; margin-top: 20px;">SAVE & APPLY FULL SERVICE & PAGE CONTENT</button>
             </form>
           </div>
 

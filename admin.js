@@ -179,6 +179,18 @@
     }
   ];
 
+  function getSubpageKeyFromLink(link, title) {
+    const l = (link || '').toLowerCase();
+    const t = (title || '').toLowerCase();
+    if (l.includes('residential') || t.includes('residential')) return 'residential';
+    if (l.includes('corporate') || t.includes('corporate')) return 'corporate';
+    if (l.includes('retail') || t.includes('retail')) return 'retail';
+    if (l.includes('consultation') || t.includes('consultation')) return 'consultation';
+    if (l.includes('vastu') || t.includes('vastu')) return 'vastu';
+    if (l.includes('dob') || t.includes('dob')) return 'dob';
+    return '';
+  }
+
   // 1. SERVICES CONTROL CENTER (Add, Edit, Delete)
   function loadServices() {
     const servicesGrid = document.getElementById('services-admin-grid');
@@ -201,10 +213,10 @@
         <div class="admin-project-body">
           <span class="badge badge-gold">${s.link || 'Service'}</span>
           <h4 class="admin-project-title" style="margin-top: 6px;">${s.title}</h4>
-          <p style="font-size: 0.82rem; color: #c4b9ad; margin-bottom: 12px; line-height: 1.4;">${s.desc}</p>
-          <div style="display: flex; gap: 8px; width: 100%;">
-            <button type="button" class="btn btn-outline-gold btn-sm" style="flex: 1;" onclick="editService(${idx})">Edit</button>
-            <button type="button" class="btn btn-outline-danger btn-sm" style="flex: 1;" onclick="deleteService(${idx})">Delete</button>
+          <p style="font-size: 0.84rem; color: #c4b9ad; margin-bottom: 14px; line-height: 1.4;">${s.desc}</p>
+          <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
+            <button type="button" class="btn btn-gold" style="width: 100%; font-size: 0.85rem; font-weight: 700; padding: 10px;" onclick="editService(${idx})">EDIT FULL PAGE & CARD CONTENT</button>
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteService(${idx})">DELETE SERVICE</button>
           </div>
         </div>
       </div>
@@ -226,11 +238,32 @@
     document.getElementById('service-link').value = target.link || '';
     document.getElementById('service-desc').value = target.desc || '';
 
-    document.getElementById('service-form-title').textContent = `Edit Service: ${target.title}`;
-    document.getElementById('service-submit-btn').textContent = 'UPDATE SERVICE';
+    const subKey = getSubpageKeyFromLink(target.link, target.title);
+    const subData = subKey ? (JSON.parse(localStorage.getItem(`dh_subpage_${subKey}`) || 'null') || defaultSubpagesData[subKey] || {}) : {};
+
+    document.getElementById('service-subpage-hero-subtitle').value = subData.heroSubtitle || '';
+    document.getElementById('service-subpage-hero-title').value = subData.heroTitle || '';
+    document.getElementById('service-subpage-p1').value = subData.p1 || '';
+    document.getElementById('service-subpage-p2').value = subData.p2 || '';
+    document.getElementById('service-subpage-sec2-tagline').value = subData.sec2Tagline || '';
+    document.getElementById('service-subpage-sec2-title').value = subData.sec2Title || '';
+    document.getElementById('service-subpage-sec2-p1').value = subData.sec2P1 || '';
+    document.getElementById('service-subpage-sec2-p2').value = subData.sec2P2 || '';
+
+    const cardPreview = document.getElementById('service-card-img-preview');
+    if (cardPreview && target.img) {
+      cardPreview.innerHTML = `<img src="${target.img}" style="max-height: 90px; border-radius: 6px; border: 1px solid var(--primary-gold);">`;
+    }
+    const subPreview = document.getElementById('service-subpage-img-preview');
+    if (subPreview && subData.img) {
+      subPreview.innerHTML = `<img src="${subData.img}" style="max-height: 90px; border-radius: 6px; border: 1px solid var(--primary-gold);">`;
+    }
+
+    document.getElementById('service-form-title').textContent = `Edit Full Service & Page Content: ${target.title}`;
+    document.getElementById('service-submit-btn').textContent = `SAVE FULL ${target.title.toUpperCase()} PAGE CONTENT`;
     document.getElementById('cancel-service-edit-btn').style.display = 'inline-block';
 
-    window.scrollTo({ top: 100, behavior: 'smooth' });
+    window.scrollTo({ top: 120, behavior: 'smooth' });
   };
 
   const cancelServiceEditBtn = document.getElementById('cancel-service-edit-btn');
@@ -245,6 +278,11 @@
     document.getElementById('service-form-title').textContent = 'Add New Service';
     document.getElementById('service-submit-btn').textContent = 'SAVE & ADD SERVICE';
     if (cancelServiceEditBtn) cancelServiceEditBtn.style.display = 'none';
+
+    const cPrev = document.getElementById('service-card-img-preview');
+    if (cPrev) cPrev.innerHTML = '';
+    const sPrev = document.getElementById('service-subpage-img-preview');
+    if (sPrev) sPrev.innerHTML = '';
   }
 
   window.deleteService = function (index) {
@@ -279,24 +317,46 @@
       let imgUrl = editIndex >= 0 && services[editIndex] ? services[editIndex].img : '../assets/logo.jpeg';
       if (imgInput && imgInput.files[0]) {
         imgUrl = await uploadImageHelper(imgInput.files[0], 'services');
-      } else if (editIndex < 0 && !imgInput.files[0]) {
-        alert('Please select an image file to upload for the new service.');
-        return;
       }
 
       const serviceObj = { title, desc, img: imgUrl, link };
 
       if (editIndex >= 0) {
         services[editIndex] = serviceObj;
-        showToast(`Updated ${title}!`);
       } else {
         services.push(serviceObj);
-        showToast(`Added new service: ${title}!`);
       }
 
       localStorage.setItem('dh_custom_services', JSON.stringify(services));
+
+      // Also save the full subpage content!
+      const subKey = getSubpageKeyFromLink(link, title);
+      if (subKey) {
+        const existingSub = JSON.parse(localStorage.getItem(`dh_subpage_${subKey}`) || 'null') || defaultSubpagesData[subKey] || {};
+        const subImgInput = document.getElementById('service-subpage-img-input');
+        let subImgUrl = existingSub.img || imgUrl;
+        if (subImgInput && subImgInput.files[0]) {
+          subImgUrl = await uploadImageHelper(subImgInput.files[0], 'subpage-hero');
+        }
+
+        const subpageObj = {
+          heroSubtitle: document.getElementById('service-subpage-hero-subtitle').value.trim() || existingSub.heroSubtitle || title,
+          heroTitle: document.getElementById('service-subpage-hero-title').value.trim() || existingSub.heroTitle || title,
+          p1: document.getElementById('service-subpage-p1').value.trim() || existingSub.p1 || desc,
+          p2: document.getElementById('service-subpage-p2').value.trim() || existingSub.p2 || '',
+          img: subImgUrl,
+          sec2Tagline: document.getElementById('service-subpage-sec2-tagline').value.trim() || existingSub.sec2Tagline || '',
+          sec2Title: document.getElementById('service-subpage-sec2-title').value.trim() || existingSub.sec2Title || '',
+          sec2P1: document.getElementById('service-subpage-sec2-p1').value.trim() || existingSub.sec2P1 || '',
+          sec2P2: document.getElementById('service-subpage-sec2-p2').value.trim() || existingSub.sec2P2 || ''
+        };
+
+        localStorage.setItem(`dh_subpage_${subKey}`, JSON.stringify(subpageObj));
+      }
+
       loadServices();
       resetServiceForm();
+      showToast(`Updated full content & card for ${title}!`);
     });
   }
 
