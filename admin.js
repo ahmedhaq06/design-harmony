@@ -300,7 +300,37 @@
     if (sPrev) sPrev.innerHTML = '';
   }
 
-  window.deleteService = function (index) {
+  // Custom Confirmation Modal Helper (Promise-based)
+  function showConfirmModal(title, message) {
+    return new Promise((resolve) => {
+      const overlay = document.getElementById('dh-confirm-modal-overlay');
+      const titleEl = document.getElementById('dh-confirm-modal-title');
+      const msgEl = document.getElementById('dh-confirm-modal-msg');
+      const cancelBtn = document.getElementById('dh-confirm-cancel-btn');
+      const submitBtn = document.getElementById('dh-confirm-submit-btn');
+
+      if (!overlay || !cancelBtn || !submitBtn) {
+        resolve(window.confirm(`${title}\n\n${message}`));
+        return;
+      }
+
+      if (titleEl) titleEl.textContent = title || 'Confirm Action';
+      if (msgEl) msgEl.textContent = message || 'Are you sure you want to perform this action?';
+      overlay.style.display = 'flex';
+
+      const cleanup = (result) => {
+        overlay.style.display = 'none';
+        cancelBtn.onclick = null;
+        submitBtn.onclick = null;
+        resolve(result);
+      };
+
+      cancelBtn.onclick = () => cleanup(false);
+      submitBtn.onclick = () => cleanup(true);
+    });
+  }
+
+  window.deleteService = async function (index) {
     let services = defaultServicesList;
     const customServices = localStorage.getItem('dh_custom_services');
     if (customServices) {
@@ -308,7 +338,8 @@
     }
 
     const title = services[index] ? services[index].title : 'Service';
-    if (confirm(`Are you sure you want to delete "${title}"?`)) {
+    const confirmed = await showConfirmModal('Delete Service', `Are you sure you want to permanently delete "${title}"? This will remove its card and content from the website.`);
+    if (confirmed) {
       services.splice(index, 1);
       localStorage.setItem('dh_custom_services', JSON.stringify(services));
       loadServices();
@@ -603,16 +634,20 @@
     }).join('');
   }
 
-  window.removeLogo = function (index) {
+  window.removeLogo = async function (index) {
     let logos = defaultLogosList;
     const customLogos = localStorage.getItem('dh_custom_logos');
     if (customLogos) {
       try { logos = JSON.parse(customLogos); } catch (e) { }
     }
-    logos.splice(index, 1);
-    localStorage.setItem('dh_custom_logos', JSON.stringify(logos));
-    loadLogos();
-    showToast('Client logo removed');
+    const logoName = logos[index] ? (logos[index].name || 'Client Logo') : 'Logo';
+    const confirmed = await showConfirmModal('Remove Client Logo', `Are you sure you want to remove "${logoName}" from the client logos ticker?`);
+    if (confirmed) {
+      logos.splice(index, 1);
+      localStorage.setItem('dh_custom_logos', JSON.stringify(logos));
+      loadLogos();
+      showToast('Client logo removed');
+    }
   };
 
   // Supabase Storage Uploader & Base64 Fallback
@@ -711,12 +746,16 @@
     `).join('');
   }
 
-  window.removeProject = function (index) {
+  window.removeProject = async function (index) {
     let projects = JSON.parse(localStorage.getItem('dh_custom_projects') || '[]');
-    projects.splice(index, 1);
-    localStorage.setItem('dh_custom_projects', JSON.stringify(projects));
-    loadProjects();
-    showToast('Project deleted');
+    const projTitle = projects[index] ? projects[index].title : 'Project';
+    const confirmed = await showConfirmModal('Delete Showcase Project', `Are you sure you want to delete "${projTitle}" from the Projects portfolio?`);
+    if (confirmed) {
+      projects.splice(index, 1);
+      localStorage.setItem('dh_custom_projects', JSON.stringify(projects));
+      loadProjects();
+      showToast('Project deleted');
+    }
   };
 
   // Add Project Form (File Upload)
