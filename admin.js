@@ -104,7 +104,7 @@
         if (data.email && document.getElementById('content-email')) document.getElementById('content-email').value = data.email;
         if (data.address && document.getElementById('content-address')) document.getElementById('content-address').value = data.address;
         if (data.heroTitle && document.getElementById('content-hero-title')) document.getElementById('content-hero-title').value = data.heroTitle;
-      } catch (e) {}
+      } catch (e) { }
     }
   }
 
@@ -203,7 +203,12 @@
     if (l.includes('consultation') || t.includes('consultation')) return 'consultation';
     if (l.includes('vastu') || t.includes('vastu')) return 'vastu';
     if (l.includes('dob') || t.includes('dob')) return 'dob';
-    return '';
+
+    const slug = (t || l)
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    return slug || 'custom';
   }
 
   // 1. SERVICES CONTROL CENTER (Add, Edit, Delete)
@@ -403,16 +408,25 @@
           subImgUrl = await uploadImageHelper(subImgInput.files[0], 'subpage-hero');
         }
 
+        const heroSubVal = document.getElementById('service-subpage-hero-subtitle').value.trim();
+        const heroTitleVal = document.getElementById('service-subpage-hero-title').value.trim();
+        const p1Val = document.getElementById('service-subpage-p1').value.trim();
+        const p2Val = document.getElementById('service-subpage-p2').value.trim();
+        const sec2TaglineVal = document.getElementById('service-subpage-sec2-tagline').value.trim();
+        const sec2TitleVal = document.getElementById('service-subpage-sec2-title').value.trim();
+        const sec2P1Val = document.getElementById('service-subpage-sec2-p1').value.trim();
+        const sec2P2Val = document.getElementById('service-subpage-sec2-p2').value.trim();
+
         const subpageObj = {
-          heroSubtitle: document.getElementById('service-subpage-hero-subtitle').value.trim() || existingSub.heroSubtitle || title,
-          heroTitle: document.getElementById('service-subpage-hero-title').value.trim() || existingSub.heroTitle || title,
-          p1: document.getElementById('service-subpage-p1').value.trim() || existingSub.p1 || desc,
-          p2: document.getElementById('service-subpage-p2').value.trim() || existingSub.p2 || '',
+          heroSubtitle: heroSubVal || existingSub.heroSubtitle || title,
+          heroTitle: heroTitleVal || existingSub.heroTitle || title,
+          p1: p1Val || existingSub.p1 || desc,
+          p2: p2Val,
           img: subImgUrl,
-          sec2Tagline: document.getElementById('service-subpage-sec2-tagline').value.trim() || existingSub.sec2Tagline || '',
-          sec2Title: document.getElementById('service-subpage-sec2-title').value.trim() || existingSub.sec2Title || '',
-          sec2P1: document.getElementById('service-subpage-sec2-p1').value.trim() || existingSub.sec2P1 || '',
-          sec2P2: document.getElementById('service-subpage-sec2-p2').value.trim() || existingSub.sec2P2 || ''
+          sec2Tagline: sec2TaglineVal,
+          sec2Title: sec2TitleVal,
+          sec2P1: sec2P1Val,
+          sec2P2: sec2P2Val
         };
 
         localStorage.setItem(`dh_subpage_${subKey}`, JSON.stringify(subpageObj));

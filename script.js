@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  /* Dynamic Sync for Admin-Edited Page Content across all 10 Pages & Custom Subpages */
+  /* Dynamic Sync for Admin-Edited Page Content across all 10 Pages */
   const currentPath = window.location.pathname.toLowerCase();
   let subpageKey = '';
   if (currentPath.includes('residential-interiors')) subpageKey = 'residential';
@@ -311,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const urlParams = new URLSearchParams(window.location.search);
       const serviceQuery = urlParams.get('service') || urlParams.get('id') || urlParams.get('title') || '';
-      
+
       const customServices = JSON.parse(localStorage.getItem('dh_custom_services') || '[]');
       let matchedService = customServices.find(s => {
         const slug = (s.title || '').toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-');
@@ -330,10 +330,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const p1 = subData.p1 || (matchedService ? matchedService.desc : '');
       const p2 = subData.p2 || '';
       const img = subData.img || (matchedService ? matchedService.img : '../assets/logo.jpeg');
-      const sec2Tagline = subData.sec2Tagline || 'DESIGN PHILOSOPHY';
-      const sec2Title = subData.sec2Title || 'Importance of Thoughtful Interior Design';
-      const sec2P1 = subData.sec2P1 || 'A well-designed space is not just about beautiful finishes—it is about creating an environment that works effortlessly.';
-      const sec2P2 = subData.sec2P2 || 'At Design Harmony, we balance creative design with smart space utilization.';
+      const sec2Tagline = subData.sec2Tagline !== undefined ? subData.sec2Tagline : '';
+      const sec2Title = subData.sec2Title !== undefined ? subData.sec2Title : '';
+      const sec2P1 = subData.sec2P1 !== undefined ? subData.sec2P1 : '';
+      const sec2P2 = subData.sec2P2 !== undefined ? subData.sec2P2 : '';
 
       document.title = `${title} | Design Harmony`;
       const heroSubEl = document.querySelector('.page-hero-subtitle');
@@ -343,6 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const sec1Title = document.querySelector('.subpage-section:nth-of-type(1) .about-title');
       const sec1Ps = document.querySelectorAll('.subpage-section:nth-of-type(1) .subpage-text-body p');
       const sec1Img = document.querySelector('.subpage-hero-img');
+      const sec2Section = document.querySelectorAll('.subpage-section')[1];
       const sec2TaglineEl = document.querySelector('.subpage-section:nth-of-type(2) .section-tagline');
       const sec2TitleEl = document.querySelector('.subpage-section:nth-of-type(2) .about-title');
       const sec2Ps = document.querySelectorAll('.subpage-section:nth-of-type(2) .subpage-text-body p');
@@ -355,7 +356,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (sec1Tagline) sec1Tagline.textContent = heroSub;
       if (sec1Title) sec1Title.textContent = title;
       if (sec1Ps.length > 0 && p1) sec1Ps[0].textContent = p1;
-      if (sec1Ps.length > 1) sec1Ps[1].textContent = p2;
+      if (sec1Ps.length > 1) {
+        if (p2) {
+          sec1Ps[1].textContent = p2;
+          sec1Ps[1].style.display = 'block';
+        } else {
+          sec1Ps[1].style.display = 'none';
+        }
+      }
       if (sec1Img && img) {
         if (img.startsWith('http') || img.startsWith('data:')) {
           sec1Img.src = img;
@@ -364,10 +372,39 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      if (sec2TaglineEl) sec2TaglineEl.textContent = sec2Tagline;
-      if (sec2TitleEl) sec2TitleEl.textContent = sec2Title;
-      if (sec2Ps.length > 0) sec2Ps[0].textContent = sec2P1;
-      if (sec2Ps.length > 1) sec2Ps[1].textContent = sec2P2;
+      const hasSec2Content = sec2Tagline || sec2Title || sec2P1 || sec2P2;
+      if (sec2Section) {
+        if (!hasSec2Content) {
+          sec2Section.style.display = 'none';
+        } else {
+          sec2Section.style.display = 'block';
+          if (sec2TaglineEl) {
+            sec2TaglineEl.textContent = sec2Tagline;
+            sec2TaglineEl.style.display = sec2Tagline ? 'block' : 'none';
+          }
+          if (sec2TitleEl) {
+            sec2TitleEl.textContent = sec2Title;
+            sec2TitleEl.style.display = sec2Title ? 'block' : 'none';
+          }
+          if (sec2Ps.length > 0) {
+            if (sec2P1) {
+              sec2Ps[0].textContent = sec2P1;
+              sec2Ps[0].style.display = 'block';
+            } else {
+              sec2Ps[0].style.display = 'none';
+            }
+          }
+          if (sec2Ps.length > 1) {
+            if (sec2P2) {
+              sec2Ps[1].textContent = sec2P2;
+              sec2Ps[1].style.display = 'block';
+            } else {
+              sec2Ps[1].style.display = 'none';
+            }
+          }
+        }
+      }
+
       if (formCardTitle) formCardTitle.textContent = `Book ${title} Consultancy`;
     } catch (err) {
       console.error('Error rendering service detail:', err);
@@ -463,7 +500,7 @@ document.addEventListener('DOMContentLoaded', () => {
           el.textContent = siteContent.email;
         });
       }
-    } catch (e) {}
+    } catch (e) { }
   }
 
   /* Dynamic Sync for Admin-Uploaded Client Logos Ticker */
@@ -561,7 +598,7 @@ document.addEventListener('DOMContentLoaded', () => {
     tabBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         const targetId = btn.getAttribute('data-target');
-        
+
         tabBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
