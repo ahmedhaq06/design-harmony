@@ -238,6 +238,23 @@
     `).join('');
   }
 
+  function generateServiceLink(title) {
+    if (!title) return 'pages/service.html';
+    const t = title.toLowerCase().trim();
+    if (t.includes('residential')) return 'pages/residential-interiors.html';
+    if (t.includes('corporate')) return 'pages/corporate-interiors.html';
+    if (t.includes('retail')) return 'pages/retail-interiors.html';
+    if (t.includes('project management') || t.includes('consultation')) return 'pages/consultation.html';
+    if (t.includes('vastu')) return 'pages/vastu-consultancy.html';
+    if (t.includes('dob') || t.includes('date of birth')) return 'pages/dob-analysis.html';
+
+    const slug = t
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    return `pages/${slug || 'service'}.html`;
+  }
+
   window.editService = function (index) {
     let services = defaultServicesList;
     const customServices = localStorage.getItem('dh_custom_services');
@@ -248,12 +265,13 @@
     const target = services[index];
     if (!target) return;
 
+    const autoLink = target.link || generateServiceLink(target.title);
+
     document.getElementById('service-edit-index').value = index;
     document.getElementById('service-title').value = target.title || '';
-    document.getElementById('service-link').value = target.link || '';
     document.getElementById('service-desc').value = target.desc || '';
 
-    const subKey = getSubpageKeyFromLink(target.link, target.title);
+    const subKey = getSubpageKeyFromLink(autoLink, target.title);
     const subData = subKey ? (JSON.parse(localStorage.getItem(`dh_subpage_${subKey}`) || 'null') || defaultSubpagesData[subKey] || {}) : {};
 
     document.getElementById('service-subpage-hero-subtitle').value = subData.heroSubtitle || '';
@@ -354,7 +372,7 @@
       e.preventDefault();
       const editIndex = parseInt(document.getElementById('service-edit-index').value, 10);
       const title = document.getElementById('service-title').value.trim();
-      const link = document.getElementById('service-link').value.trim();
+      const link = generateServiceLink(title);
       const desc = document.getElementById('service-desc').value.trim();
       const imgInput = document.getElementById('service-img-input');
 
