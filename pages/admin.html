@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin Dashboard | Design Harmony</title>
+  <link rel="icon" type="image/jpeg" href="../assets/logo.jpeg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body class="admin-body">
+
+  <div id="admin-app">
+    <!-- Screen 1: Supabase Credentials Setup / Login Screen -->
+    <div id="auth-screen" class="admin-auth-container">
+      <div class="admin-auth-card">
+        <div class="admin-brand-header text-center">
+          <img src="../assets/logo.jpeg" alt="Design Harmony Logo" class="admin-logo">
+          <h1 class="admin-auth-title">DESIGN HARMONY</h1>
+          <p class="admin-auth-subtitle">Client Admin Portal & Content Management System</p>
+        </div>
+
+        <!-- Credentials Config (Shown if not configured) -->
+        <div id="config-setup-box" class="admin-config-box">
+          <h3 class="config-title">Backend Connection Setup</h3>
+          <p class="config-desc">Connect to your private Supabase backend to enable real-time updates and secure logins.</p>
+          <div class="form-group">
+            <label class="form-label">Supabase Project URL</label>
+            <input type="text" id="supabase-url" class="form-control" placeholder="https://xyzcompany.supabase.co">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Supabase Anon Key</label>
+            <input type="password" id="supabase-key" class="form-control" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6...">
+          </div>
+          <button type="button" id="save-config-btn" class="btn btn-gold form-submit-btn">CONNECT TO SUPABASE</button>
+        </div>
+
+        <!-- Login Form (Shown once configured) -->
+        <form id="admin-login-form" class="admin-login-form" style="display: none;">
+          <h3 class="form-card-title text-center" style="margin-bottom: 20px;">Admin Login</h3>
+          
+          <div class="form-group">
+            <label class="form-label">Admin Email *</label>
+            <input type="email" id="login-email" class="form-control" placeholder="admin@designharmony.in" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Password *</label>
+            <input type="password" id="login-password" class="form-control" placeholder="••••••••••••" required>
+          </div>
+
+          <button type="submit" id="login-btn" class="btn btn-gold form-submit-btn">LOG IN TO DASHBOARD</button>
+          
+          <div class="admin-auth-actions text-center">
+            <button type="button" id="toggle-config-btn" class="text-link-btn">Change Backend Credentials</button>
+          </div>
+
+          <div id="auth-error-msg" class="form-feedback-msg error" style="display:none;"></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Screen 2: Admin Control Panel (Visible after authentication) -->
+    <div id="dashboard-screen" class="admin-dashboard-container" style="display: none;">
+      <!-- Sidebar Navigation -->
+      <aside class="admin-sidebar">
+        <div class="admin-sidebar-header">
+          <img src="../assets/logo.jpeg" alt="Design Harmony Logo" class="admin-sidebar-logo">
+          <div>
+            <div class="admin-sidebar-brand">DESIGN HARMONY</div>
+            <div class="admin-sidebar-role">Admin Control Center</div>
+          </div>
+        </div>
+
+        <nav class="admin-nav">
+          <button type="button" class="admin-nav-item active" data-tab="tab-leads">
+            <span class="nav-icon">📊</span> Form Inquiries
+          </button>
+          <button type="button" class="admin-nav-item" data-tab="tab-logos">
+            <span class="nav-icon">🖼️</span> Client Logos
+          </button>
+          <button type="button" class="admin-nav-item" data-tab="tab-projects">
+            <span class="nav-icon">🏢</span> Projects Showcase
+          </button>
+          <button type="button" class="admin-nav-item" data-tab="tab-content">
+            <span class="nav-icon">📝</span> Website Copy
+          </button>
+          <button type="button" class="admin-nav-item" data-tab="tab-settings">
+            <span class="nav-icon">⚙️</span> Handoff & Transfer
+          </button>
+        </nav>
+
+        <div class="admin-sidebar-footer">
+          <button type="button" id="admin-logout-btn" class="btn btn-outline-gold btn-sm w-100">LOG OUT</button>
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="admin-main-content">
+        <!-- Top Bar -->
+        <header class="admin-topbar">
+          <div>
+            <h2 id="current-tab-title" class="admin-page-title">Form Inquiries</h2>
+            <p id="current-tab-sub" class="admin-page-sub">View customer consultation bookings and requests in real-time.</p>
+          </div>
+
+          <div class="admin-topbar-actions">
+            <a href="../index.html" target="_blank" class="btn btn-gold-solid btn-sm">PREVIEW SITE ↗</a>
+          </div>
+        </header>
+
+        <!-- Notification Banner -->
+        <div id="dashboard-toast" class="admin-toast" style="display: none;"></div>
+
+        <!-- Tab 1: Form Inquiries / Leads -->
+        <section id="tab-leads" class="admin-tab-pane active">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h3 class="admin-card-title">Received Consultation Requests</h3>
+              <button type="button" id="refresh-leads-btn" class="btn btn-outline-gold btn-sm">REFRESH DATA</button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Form Type</th>
+                    <th>Name</th>
+                    <th>Contact</th>
+                    <th>Email</th>
+                    <th>Details</th>
+                  </tr>
+                </thead>
+                <tbody id="leads-table-body">
+                  <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">No form inquiries received yet.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tab 2: Client Logos Manager -->
+        <section id="tab-logos" class="admin-tab-pane" style="display: none;">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h3 class="admin-card-title">Add New Client Logo</h3>
+            </div>
+            <form id="add-logo-form" class="admin-form-grid">
+              <div class="form-group">
+                <label class="form-label">Client Name *</label>
+                <input type="text" id="logo-client-name" class="form-control" placeholder="e.g. Amber Enterprises" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Logo Image File / Path *</label>
+                <input type="text" id="logo-img-path" class="form-control" placeholder="assets/our clients/Logo Name.png" required>
+              </div>
+              <div class="form-group form-submit-wrap">
+                <button type="submit" class="btn btn-gold">ADD LOGO TO TICKER</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="admin-card mt-4">
+            <div class="admin-card-header">
+              <h3 class="admin-card-title">Current Client Logos Ticker</h3>
+            </div>
+            <div id="logos-grid" class="admin-logos-grid">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Tab 3: Projects Showcase Manager -->
+        <section id="tab-projects" class="admin-tab-pane" style="display: none;">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h3 class="admin-card-title">Add New Showcase Project</h3>
+            </div>
+            <form id="add-project-form" class="admin-form-grid">
+              <div class="form-group">
+                <label class="form-label">Project Title *</label>
+                <input type="text" id="project-title" class="form-control" placeholder="e.g. Modern Villa Interior" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Category *</label>
+                <select id="project-category" class="form-control" required>
+                  <option value="Residential">Residential</option>
+                  <option value="Corporate">Corporate</option>
+                  <option value="Retail">Retail</option>
+                  <option value="Turnkey PMC">Turnkey PMC</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Image Path / URL *</label>
+                <input type="text" id="project-img" class="form-control" placeholder="assets/projects/Project Name.jpg" required>
+              </div>
+              <div class="form-group form-submit-wrap">
+                <button type="submit" class="btn btn-gold">ADD PROJECT</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="admin-card mt-4">
+            <div class="admin-card-header">
+              <h3 class="admin-card-title">Project Portfolio Showcase</h3>
+            </div>
+            <div id="projects-admin-grid" class="admin-projects-grid">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Tab 4: Website Copy / Content -->
+        <section id="tab-content" class="admin-tab-pane" style="display: none;">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h3 class="admin-card-title">Edit Main Contact Details</h3>
+            </div>
+            <form id="edit-content-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Primary Contact Number</label>
+                  <input type="text" id="content-phone" class="form-control" value="+91 9811234164">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Contact Email Address</label>
+                  <input type="email" id="content-email" class="form-control" value="anuradha.designharmony@gmail.com">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Studio Address</label>
+                <input type="text" id="content-address" class="form-control" value="New Delhi, India">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Hero Title</label>
+                <input type="text" id="content-hero-title" class="form-control" value="Interior Designer, Vastu & Numerology Consultant">
+              </div>
+
+              <button type="submit" class="btn btn-gold">SAVE CONTENT CHANGES</button>
+            </form>
+          </div>
+        </section>
+
+        <!-- Tab 5: Handoff & Transfer Settings -->
+        <section id="tab-settings" class="admin-tab-pane" style="display: none;">
+          <div class="admin-card">
+            <h3 class="admin-card-title">Buyer Ownership & Transfer Guide</h3>
+            <p class="admin-card-desc">
+              When selling this website, follow these simple steps so the new owner has 100% full control and you have zero access:
+            </p>
+
+            <ol class="admin-steps-list">
+              <li>
+                <strong>Create a free Supabase Account for the buyer</strong> (or have them register at <a href="https://supabase.com" target="_blank">supabase.com</a>).
+              </li>
+              <li>
+                <strong>Transfer Supabase Project Ownership:</strong> In the Supabase Dashboard, go to <code>Project Settings → Members</code> and invite the buyer's email as <em>Owner</em>, then leave the project.
+              </li>
+              <li>
+                <strong>Transfer Credentials:</strong> Provide the buyer with their Supabase Project URL and Anon Key.
+              </li>
+              <li>
+                <strong>Buyer Sets Admin Password:</strong> The buyer opens <code>/pages/admin.html</code>, clicks "Change Backend Credentials", enters their Supabase URL and Key, and creates their private admin password.
+              </li>
+            </ol>
+
+            <div class="admin-callout-box">
+              🔒 <strong>Complete Privacy Guarantee:</strong> Once the Supabase project is transferred to the buyer's email, all admin permissions, database records, and login credentials belong exclusively to the buyer. You will not have access to any dashboard data or credentials.
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="../admin.js"></script>
+</body>
+
+</html>

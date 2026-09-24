@@ -308,6 +308,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const feedback = form.querySelector('.form-feedback-msg');
         const submitBtn = form.querySelector('.form-submit-btn');
 
+        // Extract Lead Info
+        const formData = new FormData(form);
+        const leadObj = {
+          date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+          type: form.getAttribute('data-form-type') || form.id || 'Consultation',
+          name: formData.get('name') || 'Anonymous',
+          contact: formData.get('contact') || 'N/A',
+          email: formData.get('email') || 'N/A',
+          details: formData.get('project_size') ? `${formData.get('project_size')} (${formData.get('location') || ''})` : (formData.get('challenges') || 'Request Submitted')
+        };
+
+        // Save locally for Admin Dashboard
+        try {
+          let existingLeads = JSON.parse(localStorage.getItem('dh_form_leads') || '[]');
+          existingLeads.unshift(leadObj);
+          localStorage.setItem('dh_form_leads', JSON.stringify(existingLeads));
+        } catch (err) {
+          console.error(err);
+        }
+
         if (submitBtn) {
           submitBtn.disabled = true;
           submitBtn.innerHTML = 'PROCESSING...';
