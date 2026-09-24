@@ -237,10 +237,40 @@
     showToast('Client logo removed');
   };
 
+  // Supabase Storage Uploader & Base64 Fallback
+  async function uploadImageHelper(file, bucketName) {
+    if (supabaseClient && supabaseClient.storage) {
+      try {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
+        const { data, error } = await supabaseClient.storage.from(bucketName).upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+        if (!error && data) {
+          const { data: publicUrlData } = supabaseClient.storage.from(bucketName).getPublicUrl(fileName);
+          if (publicUrlData && publicUrlData.publicUrl) {
+            return publicUrlData.publicUrl;
+          }
+        }
+      } catch (err) {
+        console.warn('Supabase storage upload fallback:', err);
+      }
+    }
+
+    // Fallback: FileReader DataURL (Base64)
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (event) => resolve(event.target.result);
+      reader.readAsDataURL(file);
+    });
+  }
+
   // Add Logo Form (File Upload)
   const addLogoForm = document.getElementById('add-logo-form');
   if (addLogoForm) {
-    addLogoForm.addEventListener('submit', function (e) {
+    addLogoForm.addEventListener('submit', async function (e) {
       e.preventDefault();
       const name = document.getElementById('logo-client-name').value.trim();
       const fileInput = document.getElementById('logo-file-input');
@@ -251,20 +281,15 @@
       }
 
       const file = fileInput.files[0];
-      const reader = new FileReader();
+      const imageUrl = await uploadImageHelper(file, 'client-logos');
 
-      reader.onload = function (event) {
-        const imageDataUrl = event.target.result;
-        let logos = JSON.parse(localStorage.getItem('dh_custom_logos') || JSON.stringify(defaultLogosList));
-        logos.push({ name: name, path: imageDataUrl });
-        localStorage.setItem('dh_custom_logos', JSON.stringify(logos));
+      let logos = JSON.parse(localStorage.getItem('dh_custom_logos') || JSON.stringify(defaultLogosList));
+      logos.push({ name: name, path: imageUrl });
+      localStorage.setItem('dh_custom_logos', JSON.stringify(logos));
 
-        loadLogos();
-        addLogoForm.reset();
-        showToast(`Uploaded and added logo for ${name}!`);
-      };
-
-      reader.readAsDataURL(file);
+      loadLogos();
+      addLogoForm.reset();
+      showToast(`Uploaded and added logo for ${name}!`);
     });
   }
 
@@ -319,7 +344,7 @@
   // Add Project Form (File Upload)
   const addProjectForm = document.getElementById('add-project-form');
   if (addProjectForm) {
-    addProjectForm.addEventListener('submit', function (e) {
+    addProjectForm.addEventListener('submit', async function (e) {
       e.preventDefault();
       const title = document.getElementById('project-title').value.trim();
       const category = document.getElementById('project-category').value;
@@ -331,20 +356,15 @@
       }
 
       const file = fileInput.files[0];
-      const reader = new FileReader();
+      const imageUrl = await uploadImageHelper(file, 'projects');
 
-      reader.onload = function (event) {
-        const imageDataUrl = event.target.result;
-        let projects = JSON.parse(localStorage.getItem('dh_custom_projects') || JSON.stringify(defaultProjectsList));
-        projects.push({ title: title, category: category, img: imageDataUrl });
-        localStorage.setItem('dh_custom_projects', JSON.stringify(projects));
+      let projects = JSON.parse(localStorage.getItem('dh_custom_projects') || JSON.stringify(defaultProjectsList));
+      projects.push({ title: title, category: category, img: imageUrl });
+      localStorage.setItem('dh_custom_projects', JSON.stringify(projects));
 
-        loadProjects();
-        addProjectForm.reset();
-        showToast(`Uploaded and added ${title} to Projects!`);
-      };
-
-      reader.readAsDataURL(file);
+      loadProjects();
+      addProjectForm.reset();
+      showToast(`Uploaded and added ${title} to Projects!`);
     });
   }
 
