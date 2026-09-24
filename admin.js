@@ -11,8 +11,8 @@
   const logoutBtn = document.getElementById('admin-logout-btn');
   const toastEl = document.getElementById('dashboard-toast');
 
-  const SUPABASE_URL = 'https://jdkrisfxkegywsyhqkpj.supabase.co';
-  const SUPABASE_KEY = 'sb_secret_EOKOmYPR_GH_OEYEHeQXkw_VrIYPFX6';
+  const SUPABASE_URL = (window.ENV && window.ENV.SUPABASE_URL) || localStorage.getItem('dh_supabase_url') || 'https://jdkrisfxkegywsyhqkpj.supabase.co';
+  const SUPABASE_KEY = (window.ENV && window.ENV.SUPABASE_ANON_KEY) || localStorage.getItem('dh_supabase_key') || '';
 
   let supabaseClient = null;
 

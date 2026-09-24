@@ -1,0 +1,10 @@
+# Environment & Config Files
+.env
+.env.local
+config.js
+env.js
+*.env
+
+# Dependencies & Build
+node_modules/
+.DS_Store
