@@ -16,20 +16,24 @@
   const logoutBtn = document.getElementById('admin-logout-btn');
   const toastEl = document.getElementById('dashboard-toast');
 
+  const DEFAULT_SUPABASE_URL = 'https://jdkrisfxkegywsyhqkpj.supabase.co';
+  const DEFAULT_SUPABASE_KEY = 'sb_secret_EOKOmYPR_GH_OEYEHeQXkw_VrIYPFX6';
+
   let supabaseClient = null;
 
   // Initial Config Check
   function initConfig() {
-    const savedUrl = localStorage.getItem('dh_supabase_url');
-    const savedKey = localStorage.getItem('dh_supabase_key');
+    const savedUrl = localStorage.getItem('dh_supabase_url') || DEFAULT_SUPABASE_URL;
+    const savedKey = localStorage.getItem('dh_supabase_key') || DEFAULT_SUPABASE_KEY;
+
+    if (supabaseUrlInput) supabaseUrlInput.value = savedUrl;
+    if (supabaseKeyInput) supabaseKeyInput.value = savedKey;
 
     if (savedUrl && savedKey && window.supabase) {
-      supabaseUrlInput.value = savedUrl;
-      supabaseKeyInput.value = savedKey;
       try {
         supabaseClient = window.supabase.createClient(savedUrl, savedKey);
-        configSetupBox.style.display = 'none';
-        adminLoginForm.style.display = 'block';
+        if (configSetupBox) configSetupBox.style.display = 'none';
+        if (adminLoginForm) adminLoginForm.style.display = 'block';
         checkExistingSession();
       } catch (err) {
         showConfigBox();
