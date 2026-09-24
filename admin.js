@@ -172,25 +172,53 @@
   }
 
   // Load Client Logos
+  const defaultLogosList = [
+    { name: 'Logo 1', path: '../our clients/logo 1.jpg' },
+    { name: 'Logo 2', path: '../our clients/logo 2.jpg' },
+    { name: 'Logo 3', path: '../our clients/logo 3.jpg' },
+    { name: 'Logo 4', path: '../our clients/logo 4.jpg' },
+    { name: 'Logo 5', path: '../our clients/logo 5.jpg' },
+    { name: 'Logo 6', path: '../our clients/logo 6.jpg' },
+    { name: 'Logo 7', path: '../our clients/logo 7.jpg' },
+    { name: 'Logo 8', path: '../our clients/logo 8.jpg' },
+    { name: 'Logo 9', path: '../our clients/logo 9.jpg' },
+    { name: 'Logo 10', path: '../our clients/logo 10.jpg' },
+    { name: 'Logo 11', path: '../our clients/logo 11.jpg' },
+    { name: 'Logo 12', path: '../our clients/logo 12.jpg' },
+    { name: 'Logo 13', path: '../our clients/logo 13.jpg' },
+    { name: 'Logo 14', path: '../our clients/logo 14.jpg' },
+    { name: 'Logo 15', path: '../our clients/logo 15.jpg' },
+    { name: 'Logo 16', path: '../our clients/logo 16.jpg' },
+    { name: 'Logo 17', path: '../our clients/logo 17.jpg' },
+    { name: 'Logo 18', path: '../our clients/logo 18.jpg' },
+    { name: 'Logo 19', path: '../our clients/logo 19.jpg' },
+    { name: 'Logo 20', path: '../our clients/logo 20.jpg' },
+    { name: 'Logo 21', path: '../our clients/logo 21.jpg' },
+    { name: 'Logo 22', path: '../our clients/logo 22.jpg' }
+  ];
+
   function loadLogos() {
     const logosGrid = document.getElementById('logos-grid');
     if (!logosGrid) return;
 
-    const defaultLogos = [
-      'AMBER.png', 'AXIS BANK.png', 'BSES.png', 'CHARLIE OUTLAW.png',
-      'CITY PARK.png', 'CROSSROADS.png', 'DATAR.jpg', 'DDA.png',
-      'DLF.png', 'Eros.png', 'FORTIS.png', 'HONDA.png', 'HOSPITALITY.jpg'
-    ];
-
-    const logos = JSON.parse(localStorage.getItem('dh_custom_logos') || JSON.stringify(defaultLogos));
+    let logos = defaultLogosList;
+    const customLogos = localStorage.getItem('dh_custom_logos');
+    if (customLogos) {
+      try {
+        const parsed = JSON.parse(customLogos);
+        if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].path && !parsed[0].path.includes('assets/our clients')) {
+          logos = parsed;
+        }
+      } catch (e) { }
+    }
 
     logosGrid.innerHTML = logos.map((item, idx) => {
-      const fileName = typeof item === 'string' ? item : item.name;
-      const imgPath = typeof item === 'string' ? `../assets/our clients/${item}` : item.path;
+      const fileName = item.name || 'Client Logo';
+      const imgPath = item.path || `../our clients/${item}`;
       return `
         <div class="admin-logo-card">
-          <img src="${imgPath}" alt="${fileName}" class="admin-logo-preview">
-          <div class="admin-logo-name">${fileName.replace(/\.[^/.]+$/, '')}</div>
+          <img src="${imgPath}" alt="${fileName}" class="admin-logo-preview" onerror="this.src='../assets/logo.jpeg'">
+          <div class="admin-logo-name">${fileName}</div>
           <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeLogo(${idx})">Remove</button>
         </div>
       `;
@@ -198,12 +226,11 @@
   }
 
   window.removeLogo = function (index) {
-    const defaultLogos = [
-      'AMBER.png', 'AXIS BANK.png', 'BSES.png', 'CHARLIE OUTLAW.png',
-      'CITY PARK.png', 'CROSSROADS.png', 'DATAR.jpg', 'DDA.png',
-      'DLF.png', 'Eros.png', 'FORTIS.png', 'HONDA.png', 'HOSPITALITY.jpg'
-    ];
-    let logos = JSON.parse(localStorage.getItem('dh_custom_logos') || JSON.stringify(defaultLogos));
+    let logos = defaultLogosList;
+    const customLogos = localStorage.getItem('dh_custom_logos');
+    if (customLogos) {
+      try { logos = JSON.parse(customLogos); } catch (e) { }
+    }
     logos.splice(index, 1);
     localStorage.setItem('dh_custom_logos', JSON.stringify(logos));
     loadLogos();
@@ -220,7 +247,7 @@
 
       if (!name || !path) return;
 
-      let logos = JSON.parse(localStorage.getItem('dh_custom_logos') || '[]');
+      let logos = JSON.parse(localStorage.getItem('dh_custom_logos') || JSON.stringify(defaultLogosList));
       logos.push({ name: name, path: path });
       localStorage.setItem('dh_custom_logos', JSON.stringify(logos));
 
@@ -231,24 +258,36 @@
   }
 
   // Load Projects
+  const defaultProjectsList = [
+    { title: 'Living Room Elegance', category: 'Residential', img: '../projects/Living Room.jpg' },
+    { title: 'Master Bedroom Suite', category: 'Residential', img: '../projects/Bedroom Area.jpg' },
+    { title: 'Luxury Dining Space', category: 'Residential', img: '../projects/Dining Area.jpg' },
+    { title: 'Contemporary Modular Kitchen', category: 'Residential', img: '../projects/Kitchen Area.jpg' },
+    { title: 'BGCC Head Office', category: 'Corporate', img: '../projects/BGCC HEAD OFFICE.jpg' },
+    { title: 'Export Genius Office Area', category: 'Corporate', img: '../projects/Export Genius Office Area.jpg' },
+    { title: 'Export Genius Conference Room', category: 'Corporate', img: '../projects/Export Genius conference room.jpg' },
+    { title: 'Indian Army Executive Office', category: 'Corporate', img: '../projects/Indian Army Office.jpg' },
+    { title: 'SUN Group Office Reception', category: 'Corporate', img: '../projects/SUN Group Office reception.jpg' }
+  ];
+
   function loadProjects() {
     const projectsGrid = document.getElementById('projects-admin-grid');
     if (!projectsGrid) return;
 
-    const defaultProjects = [
-      { title: 'The Royal Heritage Residence', category: 'Residential', img: '../assets/projects/The Royal Heritage Residence.jpg' },
-      { title: 'Veda Corporate Headquarters', category: 'Corporate', img: '../assets/projects/Veda Corporate Headquarters.jpg' },
-      { title: 'Aura Luxury Boutique', category: 'Retail', img: '../assets/projects/Aura Luxury Boutique.jpg' },
-      { title: 'The Pavilion Penthouse', category: 'Residential', img: '../assets/projects/The Pavilion Penthouse.jpeg' },
-      { title: 'Zenith Executive Suite', category: 'Corporate', img: '../assets/projects/Zenith Executive Suite.jpeg' },
-      { title: 'Harmonious Vastu Sanctuary', category: 'Turnkey PMC', img: '../assets/projects/Harmonious Vastu Sanctuary.jpeg' }
-    ];
-
-    const projects = JSON.parse(localStorage.getItem('dh_custom_projects') || JSON.stringify(defaultProjects));
+    let projects = defaultProjectsList;
+    const customProjects = localStorage.getItem('dh_custom_projects');
+    if (customProjects) {
+      try {
+        const parsed = JSON.parse(customProjects);
+        if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].img && !parsed[0].img.includes('assets/projects')) {
+          projects = parsed;
+        }
+      } catch (e) { }
+    }
 
     projectsGrid.innerHTML = projects.map((p, idx) => `
       <div class="admin-project-card">
-        <img src="${p.img}" alt="${p.title}" class="admin-project-img">
+        <img src="${p.img}" alt="${p.title}" class="admin-project-img" onerror="this.src='../assets/logo.jpeg'">
         <div class="admin-project-body">
           <span class="badge badge-gold">${p.category}</span>
           <h4 class="admin-project-title">${p.title}</h4>
