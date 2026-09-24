@@ -39,6 +39,11 @@ html {
 body {
   font-family: var(--font-sans);
   background-color: var(--light-bg);
+  background-image: url('assets/cloudbackg.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   color: var(--text-dark);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -584,7 +589,10 @@ ul {
 
 .about-section {
   width: 100%;
-  background-color: #EAE2D6;
+  background-image: url('assets/cloudbackg.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   padding: 90px 8%;
   color: var(--text-dark);
 }
@@ -1208,6 +1216,20 @@ body.nav-open .site-footer {
     padding: 120px 24px 60px;
   }
 
+  .hero-overlay {
+    background: linear-gradient(180deg, rgba(15, 12, 10, 0.65) 0%, rgba(15, 12, 10, 0.45) 50%, rgba(15, 12, 10, 0.70) 100%) !important;
+  }
+
+  .hero-title {
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.8) !important;
+  }
+
+  .hero-subtext-bar,
+  .hero-description {
+    color: #FFFFFF !important;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9) !important;
+  }
+
   .hero-subtext-bar {
     flex-wrap: wrap;
     font-size: 0.85rem;
@@ -1515,6 +1537,10 @@ body.nav-open .site-footer {
 /* Subpage Main Content Layout */
 .subpage-section {
   padding: 80px 0;
+  background-image: url('assets/cloudbackg.jpeg') !important;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .subpage-grid-2col {
