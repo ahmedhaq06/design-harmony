@@ -704,24 +704,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Dual-mode Google Sheets Dispatcher (POST + GET Query Fallback)
+  // Google Sheets Dispatcher (GET — confirmed working)
   function sendLeadToGoogleSheets(leadObj) {
     const sheetsUrl = window.ENV && window.ENV.GOOGLE_SHEETS_URL;
     if (!sheetsUrl || !sheetsUrl.startsWith('http')) return;
 
-    // 1. POST Request
-    fetch(sheetsUrl, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(leadObj)
-    }).catch(err => console.error('Google Sheets POST error:', err));
-
-    // 2. GET Query Parameter Fallback (Guarantees execution even if POST redirect is blocked)
     try {
       const params = new URLSearchParams(leadObj).toString();
       const getUrl = sheetsUrl.includes('?') ? `${sheetsUrl}&${params}` : `${sheetsUrl}?${params}`;
-      fetch(getUrl, { mode: 'no-cors' }).catch(err => console.error('Google Sheets GET error:', err));
+      fetch(getUrl, { mode: 'no-cors' }).catch(err => console.error('Google Sheets error:', err));
     } catch (err) { }
   }
 
