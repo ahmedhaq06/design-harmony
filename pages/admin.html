@@ -68,6 +68,7 @@
           <button type="button" class="admin-nav-item" data-tab="tab-logos">Client Logos</button>
           <button type="button" class="admin-nav-item" data-tab="tab-projects">Projects Showcase</button>
           <button type="button" class="admin-nav-item" data-tab="tab-content">Website Contact</button>
+          <button type="button" class="admin-nav-item" data-tab="tab-security">🔒 Change Password</button>
         </nav>
 
         <div class="admin-sidebar-footer">
@@ -366,7 +367,7 @@
           </div>
         </section>
 
-        <!-- Tab 4: Website ontent -->
+        <!-- Tab 4: Website Content -->
         <section id="tab-content" class="admin-tab-pane" style="display: none;">
           <div class="admin-card">
             <div class="admin-card-header">
@@ -396,6 +397,58 @@
               </div>
 
               <button type="submit" class="btn btn-gold">SAVE CONTENT CHANGES</button>
+            </form>
+          </div>
+        </section>
+
+        <!-- Tab 5: Account Security — Change Password -->
+        <section id="tab-security" class="admin-tab-pane" style="display: none;">
+          <div class="admin-card" style="max-width: 560px;">
+            <div class="admin-card-header">
+              <h3 class="admin-card-title">Change Admin Password</h3>
+            </div>
+            <p style="font-size: 0.88rem; color: #b8ac9f; margin-bottom: 26px; line-height: 1.6;">
+              Update your admin login password. You will remain logged in after changing it.
+            </p>
+
+            <form id="change-password-form" autocomplete="off">
+              <div class="form-group">
+                <label class="form-label">Current Password *</label>
+                <div style="position: relative;">
+                  <input type="password" id="cp-current" class="form-control" placeholder="Enter your current password" autocomplete="current-password" required>
+                  <button type="button" class="cp-eye-btn" data-target="cp-current" title="Toggle visibility" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#b8ac9f;font-size:1rem;">👁</button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">New Password *</label>
+                <div style="position: relative;">
+                  <input type="password" id="cp-new" class="form-control" placeholder="Min. 8 characters" autocomplete="new-password" required>
+                  <button type="button" class="cp-eye-btn" data-target="cp-new" title="Toggle visibility" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#b8ac9f;font-size:1rem;">👁</button>
+                </div>
+                <!-- Password Strength Bar -->
+                <div id="cp-strength-bar-wrap" style="margin-top: 10px; display: none;">
+                  <div style="height: 5px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+                    <div id="cp-strength-bar" style="height: 100%; width: 0%; border-radius: 4px; transition: width 0.3s ease, background 0.3s ease;"></div>
+                  </div>
+                  <span id="cp-strength-label" style="font-size: 0.75rem; color: #b8ac9f; margin-top: 5px; display: block;"></span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Confirm New Password *</label>
+                <div style="position: relative;">
+                  <input type="password" id="cp-confirm" class="form-control" placeholder="Re-enter new password" autocomplete="new-password" required>
+                  <button type="button" class="cp-eye-btn" data-target="cp-confirm" title="Toggle visibility" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#b8ac9f;font-size:1rem;">👁</button>
+                </div>
+                <span id="cp-match-hint" style="font-size: 0.78rem; margin-top: 6px; display: none;"></span>
+              </div>
+
+              <div id="cp-feedback" class="form-feedback-msg" style="display: none; margin-bottom: 16px;"></div>
+
+              <button type="submit" id="cp-submit-btn" class="btn btn-gold" style="width: 100%; padding: 15px; font-size: 1rem;">
+                UPDATE PASSWORD
+              </button>
             </form>
           </div>
         </section>

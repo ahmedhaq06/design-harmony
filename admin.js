@@ -154,7 +154,8 @@
     'tab-subpages': { title: 'Service Subpages Editor', sub: 'Customize titles, paragraphs, and featured images for service subpages.' },
     'tab-logos': { title: 'Client Logos Ticker', sub: 'Add or manage client logos displayed in the home page ticker.' },
     'tab-projects': { title: 'Projects Portfolio', sub: 'Add, update, or remove projects shown on the Projects page.' },
-    'tab-content': { title: 'Website Copy & Contact', sub: 'Edit main studio contact details and hero titles.' }
+    'tab-content': { title: 'Website Copy & Contact', sub: 'Edit main studio contact details and hero titles.' },
+    'tab-security': { title: 'Account Security', sub: 'Change your admin login password securely.' }
   };
 
   navItems.forEach(item => {
@@ -882,6 +883,183 @@
       toastEl.style.display = 'none';
     }, 3500);
   }
+
+  // ============================================================
+  // Change Password — Account Security Tab
+  // ============================================================
+  (function initChangePassword() {
+    const cpForm     = document.getElementById('change-password-form');
+    const cpCurrent  = document.getElementById('cp-current');
+    const cpNew      = document.getElementById('cp-new');
+    const cpConfirm  = document.getElementById('cp-confirm');
+    const cpFeedback = document.getElementById('cp-feedback');
+    const cpSubmit   = document.getElementById('cp-submit-btn');
+    const cpStrengthWrap  = document.getElementById('cp-strength-bar-wrap');
+    const cpStrengthBar   = document.getElementById('cp-strength-bar');
+    const cpStrengthLabel = document.getElementById('cp-strength-label');
+    const cpMatchHint     = document.getElementById('cp-match-hint');
+
+    if (!cpForm) return;
+
+    // --- Show/Hide Password Toggle ---
+    document.querySelectorAll('.cp-eye-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        const targetId = this.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+        if (!input) return;
+        const isPassword = input.type === 'password';
+        input.type = isPassword ? 'text' : 'password';
+        this.textContent = isPassword ? '🙈' : '👁';
+      });
+    });
+
+    // --- Password Strength Meter ---
+    function getStrength(pw) {
+      let score = 0;
+      if (pw.length >= 8)  score++;
+      if (pw.length >= 12) score++;
+      if (/[A-Z]/.test(pw)) score++;
+      if (/[0-9]/.test(pw)) score++;
+      if (/[^A-Za-z0-9]/.test(pw)) score++;
+      return score;
+    }
+
+    cpNew.addEventListener('input', function () {
+      const pw = this.value;
+      if (!pw) {
+        cpStrengthWrap.style.display = 'none';
+        return;
+      }
+      cpStrengthWrap.style.display = 'block';
+      const score = getStrength(pw);
+      const levels = [
+        { label: 'Very Weak',  color: '#e53935', pct: '20%' },
+        { label: 'Weak',       color: '#fb8c00', pct: '40%' },
+        { label: 'Fair',       color: '#fdd835', pct: '60%' },
+        { label: 'Strong',     color: '#43a047', pct: '80%' },
+        { label: 'Very Strong',color: '#00897b', pct: '100%' }
+      ];
+      const lvl = levels[Math.min(score - 1, 4)] || levels[0];
+      cpStrengthBar.style.width = lvl.pct;
+      cpStrengthBar.style.background = lvl.color;
+      cpStrengthLabel.textContent = lvl.label;
+      cpStrengthLabel.style.color = lvl.color;
+      // Also refresh match hint
+      checkMatch();
+    });
+
+    // --- Confirm Match Hint ---
+    function checkMatch() {
+      const nv = cpNew.value;
+      const cv = cpConfirm.value;
+      if (!cv) { cpMatchHint.style.display = 'none'; return; }
+      cpMatchHint.style.display = 'block';
+      if (nv === cv) {
+        cpMatchHint.textContent = '✓ Passwords match';
+        cpMatchHint.style.color = '#43a047';
+      } else {
+        cpMatchHint.textContent = '✗ Passwords do not match';
+        cpMatchHint.style.color = '#e53935';
+      }
+    }
+    cpConfirm.addEventListener('input', checkMatch);
+
+    // --- Feedback Helper ---
+    function showCpFeedback(msg, isError) {
+      cpFeedback.textContent = msg;
+      cpFeedback.className = 'form-feedback-msg ' + (isError ? 'error' : 'success');
+      cpFeedback.style.display = 'block';
+    }
+    function hideCpFeedback() {
+      cpFeedback.style.display = 'none';
+    }
+
+    // --- Form Submit ---
+    cpForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      hideCpFeedback();
+
+      const currentPw = cpCurrent.value;
+      const newPw     = cpNew.value;
+      const confirmPw = cpConfirm.value;
+
+      // Validation
+      if (!currentPw || !newPw || !confirmPw) {
+        showCpFeedback('Please fill in all fields.', true);
+        return;
+      }
+      if (newPw.length < 8) {
+        showCpFeedback('New password must be at least 8 characters.', true);
+        return;
+      }
+      if (newPw !== confirmPw) {
+        showCpFeedback('New passwords do not match. Please re-enter.', true);
+        return;
+      }
+      if (newPw === currentPw) {
+        showCpFeedback('New password must be different from your current password.', true);
+        return;
+      }
+
+      if (!supabaseClient) {
+        showCpFeedback('Authentication service unavailable. Please reload the page.', true);
+        return;
+      }
+
+      // Disable button
+      cpSubmit.disabled = true;
+      cpSubmit.textContent = 'UPDATING...';
+
+      try {
+        // Step 1: Re-authenticate with current password to verify it's correct
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (!user || !user.email) {
+          showCpFeedback('Session expired. Please log out and log back in.', true);
+          cpSubmit.disabled = false;
+          cpSubmit.textContent = 'UPDATE PASSWORD';
+          return;
+        }
+
+        const { error: reAuthError } = await supabaseClient.auth.signInWithPassword({
+          email: user.email,
+          password: currentPw
+        });
+
+        if (reAuthError) {
+          showCpFeedback('Current password is incorrect. Please try again.', true);
+          cpSubmit.disabled = false;
+          cpSubmit.textContent = 'UPDATE PASSWORD';
+          return;
+        }
+
+        // Step 2: Update to new password
+        const { error: updateError } = await supabaseClient.auth.updateUser({
+          password: newPw
+        });
+
+        if (updateError) {
+          showCpFeedback('Failed to update password: ' + updateError.message, true);
+          cpSubmit.disabled = false;
+          cpSubmit.textContent = 'UPDATE PASSWORD';
+          return;
+        }
+
+        // Success!
+        showCpFeedback('✓ Password updated successfully! Your new password is now active.', false);
+        cpForm.reset();
+        cpStrengthWrap.style.display = 'none';
+        cpMatchHint.style.display = 'none';
+        showToast('Password changed successfully!');
+
+      } catch (err) {
+        showCpFeedback('An unexpected error occurred. Please try again.', true);
+        console.error('Change password error:', err);
+      } finally {
+        cpSubmit.disabled = false;
+        cpSubmit.textContent = 'UPDATE PASSWORD';
+      }
+    });
+  })();
 
   // Run on load
   document.addEventListener('DOMContentLoaded', initConfig);
