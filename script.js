@@ -651,8 +651,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const formTypeAttr = form.getAttribute('data-form-type') || form.id || '';
 
         let typeName = cardTitle || formTypeAttr || 'Consultation';
-        if (formTypeAttr === 'dob') typeName = 'DOB Analysis Consultation';
-        else if (formTypeAttr === 'vastu') typeName = 'Vastu Consultancy';
+        if (formTypeAttr === 'dob' || form.id === 'form-dob') typeName = 'DOB Analysis Consultation';
+        else if (formTypeAttr === 'vastu' || form.id === 'form-vastu') typeName = 'Vastu Consultancy';
+        else if (form.id === 'form-interior' || formTypeAttr === 'interior') typeName = 'Interior Design Consultation';
 
         const leadObj = {
           date: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
@@ -680,14 +681,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Send to Google Sheets if Web App URL configured
-        if (window.ENV && window.ENV.GOOGLE_SHEETS_URL) {
-          fetch(window.ENV.GOOGLE_SHEETS_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(leadObj)
-          }).catch(err => console.error('Google Sheets submit error:', err));
-        }
+        sendLeadToGoogleSheets(leadObj);
 
         if (submitBtn) {
           submitBtn.disabled = true;
@@ -708,6 +702,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 800);
       });
     });
+  }
+
+  // Dual-mode Google Sheets Dispatcher (POST + GET Query Fallback)
+  function sendLeadToGoogleSheets(leadObj) {
+    const sheetsUrl = window.ENV && window.ENV.GOOGLE_SHEETS_URL;
+    if (!sheetsUrl || !sheetsUrl.startsWith('http')) return;
+
+    // 1. POST Request
+    fetch(sheetsUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(leadObj)
+    }).catch(err => console.error('Google Sheets POST error:', err));
+
+    // 2. GET Query Parameter Fallback (Guarantees execution even if POST redirect is blocked)
+    try {
+      const params = new URLSearchParams(leadObj).toString();
+      const getUrl = sheetsUrl.includes('?') ? `${sheetsUrl}&${params}` : `${sheetsUrl}?${params}`;
+      fetch(getUrl, { mode: 'no-cors' }).catch(err => console.error('Google Sheets GET error:', err));
+    } catch (err) { }
   }
 
   /* Contact Form Interactive Submission Handler */
@@ -744,14 +759,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Send to Google Sheets if Web App URL configured
-      if (window.ENV && window.ENV.GOOGLE_SHEETS_URL) {
-        fetch(window.ENV.GOOGLE_SHEETS_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(leadObj)
-        }).catch(err => console.error('Google Sheets submit error:', err));
-      }
+      sendLeadToGoogleSheets(leadObj);
 
       if (submitBtn) {
         submitBtn.disabled = true;

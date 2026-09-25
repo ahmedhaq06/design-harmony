@@ -1,3 +1,7 @@
+function doGet(e) {
+  return doPost(e);
+}
+
 function doPost(e) {
   try {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
