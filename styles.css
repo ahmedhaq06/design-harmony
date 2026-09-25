@@ -1050,9 +1050,30 @@ ul {
   color: rgba(255, 255, 255, 0.75);
   padding: 60px 0 24px;
   border-top: 1px solid #6E5739;
+  position: relative;
+  overflow: hidden;
+}
+
+.site-footer::before {
+  content: 'DESIGN HARMONY';
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 6.2vw, 6.2rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.04);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
 }
 
 .footer-container {
+  position: relative;
+  z-index: 1;
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 24px;

@@ -1,0 +1,92 @@
+function doPost(e) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var data = {};
+
+    if (e.postData && e.postData.contents) {
+      try {
+        data = JSON.parse(e.postData.contents);
+      } catch (err) {
+        data = e.parameter;
+      }
+    } else {
+      data = e.parameter;
+    }
+
+    var timestamp     = data.date || new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+    var serviceType   = data.type || data.form_type || "General Inquiry";
+    var name          = data.name || "Anonymous";
+    var contact       = data.contact || data.phone || "N/A";
+    var email         = data.email || "N/A";
+    var dob           = data.dob || "N/A";
+    var projectSize   = data.project_size || "N/A";
+    var projectBudget = data.project_budget || "N/A";
+    var location      = data.location || "N/A";
+    var challenges    = data.challenges || data.message || "N/A";
+    var details       = data.details || "N/A";
+
+    // TAB 1: MASTER SUMMARY SHEET (Logs ALL incoming leads)
+    var masterSheet = getOrCreateSheet(ss, "All Leads Summary", [
+      "Timestamp", "Service / Form Name", "Name", "Contact No", "Email", "Date of Birth", "Project Size", "Budget", "Location", "Challenges / Notes"
+    ]);
+
+    masterSheet.appendRow([
+      timestamp, serviceType, name, contact, email, dob, projectSize, projectBudget, location, (challenges !== "N/A" ? challenges : details)
+    ]);
+
+    // TAB 2: AUTOMATIC SERVICE CATEGORY TAB
+    var categoryTabName = getCategoryTabName(serviceType);
+    if (categoryTabName) {
+      var catSheet = getOrCreateSheet(ss, categoryTabName, getCategoryHeaders(categoryTabName));
+      catSheet.appendRow(getCategoryRow(categoryTabName, timestamp, serviceType, name, contact, email, dob, projectSize, projectBudget, location, challenges, details));
+    }
+
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: "success", message: "Lead recorded successfully!" }))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (error) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: "error", message: error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function getOrCreateSheet(ss, sheetName, headers) {
+  var sheet = ss.getSheetByName(sheetName);
+  if (!sheet) sheet = ss.insertSheet(sheetName);
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(headers);
+    sheet.getRange(1, 1, 1, headers.length)
+      .setFontWeight("bold")
+      .setBackground("#EAE1D5")
+      .setColor("#2A241F")
+      .setHorizontalAlignment("center");
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
+}
+
+function getCategoryTabName(serviceType) {
+  var st = (serviceType || "").toLowerCase();
+  if (st.indexOf("dob") !== -1 || st.indexOf("numerology") !== -1) return "DOB Numerology Leads";
+  if (st.indexOf("vastu") !== -1) return "Vastu Leads";
+  if (st.indexOf("interior") !== -1 || st.indexOf("residential") !== -1 || st.indexOf("corporate") !== -1 || st.indexOf("retail") !== -1) return "Interior Design Leads";
+  if (st.indexOf("contact") !== -1) return "Contact Us Leads";
+  return "General Consultations";
+}
+
+function getCategoryHeaders(tabName) {
+  if (tabName === "DOB Numerology Leads") return ["Timestamp", "Client Name", "Contact No", "Date of Birth", "Key Challenges / Questions"];
+  if (tabName === "Vastu Leads") return ["Timestamp", "Client Name", "Contact No", "Date of Birth", "Property / Vastu Concerns"];
+  if (tabName === "Interior Design Leads") return ["Timestamp", "Service Type", "Client Name", "Contact No", "Email", "Project Size", "Budget", "Location"];
+  if (tabName === "Contact Us Leads") return ["Timestamp", "Client Name", "Contact / Phone", "Email", "Message / Query"];
+  return ["Timestamp", "Form Type", "Client Name", "Contact No", "Email", "Details"];
+}
+
+function getCategoryRow(tabName, timestamp, serviceType, name, contact, email, dob, projectSize, projectBudget, location, challenges, details) {
+  if (tabName === "DOB Numerology Leads" || tabName === "Vastu Leads") return [timestamp, name, contact, dob, challenges];
+  if (tabName === "Interior Design Leads") return [timestamp, serviceType, name, contact, email, projectSize, projectBudget, location];
+  if (tabName === "Contact Us Leads") return [timestamp, name, contact, email, challenges !== "N/A" ? challenges : details];
+  return [timestamp, serviceType, name, contact, email, details];
+}

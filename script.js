@@ -645,15 +645,29 @@ document.addEventListener('DOMContentLoaded', () => {
         const feedback = form.querySelector('.form-feedback-msg');
         const submitBtn = form.querySelector('.form-submit-btn');
 
-        // Extract Lead Info
+        // Extract Comprehensive Lead Info from any subpage form
         const formData = new FormData(form);
+        const cardTitle = form.closest('.form-card')?.querySelector('.form-card-title')?.textContent.trim() || '';
+        const formTypeAttr = form.getAttribute('data-form-type') || form.id || '';
+
+        let typeName = cardTitle || formTypeAttr || 'Consultation';
+        if (formTypeAttr === 'dob') typeName = 'DOB Analysis Consultation';
+        else if (formTypeAttr === 'vastu') typeName = 'Vastu Consultancy';
+
         const leadObj = {
-          date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
-          type: form.getAttribute('data-form-type') || form.id || 'Consultation',
+          date: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+          type: typeName,
           name: formData.get('name') || 'Anonymous',
-          contact: formData.get('contact') || 'N/A',
+          contact: formData.get('contact') || formData.get('phone') || 'N/A',
           email: formData.get('email') || 'N/A',
-          details: formData.get('project_size') ? `${formData.get('project_size')} (${formData.get('location') || ''})` : (formData.get('challenges') || 'Request Submitted')
+          dob: formData.get('dob') || 'N/A',
+          project_size: formData.get('project_size') || 'N/A',
+          project_budget: formData.get('project_budget') || 'N/A',
+          location: formData.get('location') || 'N/A',
+          challenges: formData.get('challenges') || formData.get('message') || 'N/A',
+          details: formData.get('project_size') 
+            ? `Size: ${formData.get('project_size')} | Budget: ${formData.get('project_budget') || 'N/A'} | Loc: ${formData.get('location') || 'N/A'}`
+            : (formData.get('challenges') || formData.get('message') || 'Request Submitted')
         };
 
         // Save locally for Admin Dashboard
@@ -663,6 +677,16 @@ document.addEventListener('DOMContentLoaded', () => {
           localStorage.setItem('dh_form_leads', JSON.stringify(existingLeads));
         } catch (err) {
           console.error(err);
+        }
+
+        // Send to Google Sheets if Web App URL configured
+        if (window.ENV && window.ENV.GOOGLE_SHEETS_URL) {
+          fetch(window.ENV.GOOGLE_SHEETS_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(leadObj)
+          }).catch(err => console.error('Google Sheets submit error:', err));
         }
 
         if (submitBtn) {
@@ -693,6 +717,41 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       const feedback = form.querySelector('.form-feedback-msg');
       const submitBtn = form.querySelector('.form-submit-btn');
+
+      // Extract Contact Form Info
+      const formData = new FormData(form);
+      const leadObj = {
+        date: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        type: form.getAttribute('data-form-type') || 'Contact Us Form',
+        name: formData.get('name') || 'Anonymous',
+        contact: formData.get('phone') || formData.get('contact') || 'N/A',
+        email: formData.get('email') || 'N/A',
+        dob: 'N/A',
+        project_size: 'N/A',
+        project_budget: 'N/A',
+        location: 'N/A',
+        challenges: formData.get('message') || formData.get('subject') || 'Contact Inquiry',
+        details: formData.get('message') || formData.get('subject') || 'Contact Inquiry'
+      };
+
+      // Save locally for Admin Dashboard
+      try {
+        let existingLeads = JSON.parse(localStorage.getItem('dh_form_leads') || '[]');
+        existingLeads.unshift(leadObj);
+        localStorage.setItem('dh_form_leads', JSON.stringify(existingLeads));
+      } catch (err) {
+        console.error(err);
+      }
+
+      // Send to Google Sheets if Web App URL configured
+      if (window.ENV && window.ENV.GOOGLE_SHEETS_URL) {
+        fetch(window.ENV.GOOGLE_SHEETS_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(leadObj)
+        }).catch(err => console.error('Google Sheets submit error:', err));
+      }
 
       if (submitBtn) {
         submitBtn.disabled = true;
