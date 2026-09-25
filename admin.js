@@ -16,6 +16,17 @@
 
   let supabaseClient = null;
 
+  // Security Utility: Escape HTML to prevent XSS (Cross-Site Scripting)
+  function escapeHTML(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   // Initial Config Check
   function initConfig() {
     if (window.supabase) {
@@ -30,13 +41,24 @@
 
   // Check Auth Session
   async function checkExistingSession() {
+    if (supabaseClient) {
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session && session.user) {
+          showDashboard();
+          return;
+        }
+      } catch (err) {
+        console.error('Session check error:', err);
+      }
+    }
     const sessionToken = localStorage.getItem('dh_admin_logged_in');
     if (sessionToken === 'true') {
       showDashboard();
     }
   }
 
-  // Login Form Submission
+  // Login Form Submission (Secure Authentication Flow)
   if (adminLoginForm) {
     adminLoginForm.addEventListener('submit', async function (e) {
       e.preventDefault();
@@ -44,6 +66,12 @@
       const password = document.getElementById('login-password').value;
 
       authErrorMsg.style.display = 'none';
+
+      if (!email || !password) {
+        authErrorMsg.textContent = 'Please enter both email and password.';
+        authErrorMsg.style.display = 'block';
+        return;
+      }
 
       // Supabase Authentication
       if (supabaseClient) {
@@ -54,13 +82,6 @@
           });
 
           if (error) {
-            // Fallback for demo / offline initial setup if auth user not created yet
-            if (email && password.length >= 6) {
-              localStorage.setItem('dh_admin_logged_in', 'true');
-              showDashboard();
-              showToast('Logged in (Local Session active)');
-              return;
-            }
             authErrorMsg.textContent = error.message || 'Invalid login credentials.';
             authErrorMsg.style.display = 'block';
             return;
@@ -70,16 +91,16 @@
             localStorage.setItem('dh_admin_logged_in', 'true');
             showDashboard();
             showToast('Welcome back, Admin!');
+            return;
           }
         } catch (err) {
-          // Local fallback
-          localStorage.setItem('dh_admin_logged_in', 'true');
-          showDashboard();
+          authErrorMsg.textContent = 'Authentication error. Please verify your credentials.';
+          authErrorMsg.style.display = 'block';
+          return;
         }
       } else {
-        // Direct local login
-        localStorage.setItem('dh_admin_logged_in', 'true');
-        showDashboard();
+        authErrorMsg.textContent = 'Authentication service unavailable. Check your environment config.';
+        authErrorMsg.style.display = 'block';
       }
     });
   }
@@ -229,11 +250,11 @@
 
     servicesGrid.innerHTML = services.map((s, idx) => `
       <div class="admin-project-card">
-        <img src="${s.img}" alt="${s.title}" class="admin-project-img" onerror="this.src='../assets/logo.jpeg'">
+        <img src="${escapeHTML(s.img)}" alt="${escapeHTML(s.title)}" class="admin-project-img" onerror="this.src='../assets/logo.jpeg'">
         <div class="admin-project-body">
-          <span class="badge badge-gold">${s.link || 'Service'}</span>
-          <h4 class="admin-project-title" style="margin-top: 6px;">${s.title}</h4>
-          <p style="font-size: 0.84rem; color: #c4b9ad; margin-bottom: 14px; line-height: 1.4;">${s.desc}</p>
+          <span class="badge badge-gold">${escapeHTML(s.link || 'Service')}</span>
+          <h4 class="admin-project-title" style="margin-top: 6px;">${escapeHTML(s.title)}</h4>
+          <p style="font-size: 0.84rem; color: #c4b9ad; margin-bottom: 14px; line-height: 1.4;">${escapeHTML(s.desc)}</p>
           <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
             <button type="button" class="btn btn-gold" style="width: 100%; font-size: 0.85rem; font-weight: 700; padding: 10px;" onclick="editService(${idx})">EDIT FULL PAGE & CARD CONTENT</button>
             <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteService(${idx})">DELETE SERVICE</button>
@@ -658,8 +679,8 @@
       const imgPath = item.path || `../our clients/${item}`;
       return `
         <div class="admin-logo-card">
-          <img src="${imgPath}" alt="${fileName}" class="admin-logo-preview" onerror="this.src='../assets/logo.jpeg'">
-          <div class="admin-logo-name">${fileName}</div>
+          <img src="${escapeHTML(imgPath)}" alt="${escapeHTML(fileName)}" class="admin-logo-preview" onerror="this.src='../assets/logo.jpeg'">
+          <div class="admin-logo-name">${escapeHTML(fileName)}</div>
           <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeLogo(${idx})">Remove</button>
         </div>
       `;
@@ -682,12 +703,28 @@
     }
   };
 
-  // Supabase Storage Uploader & Base64 Fallback
+  // Secure Supabase Storage Uploader & Base64 Fallback with File Validation
   async function uploadImageHelper(file, bucketName) {
+    if (!file) return '../assets/logo.jpeg';
+
+    // 1. MIME Type Validation (Strictly Image types only to prevent script/executable injection)
+    const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
+    if (file.type && !allowedMimeTypes.includes(file.type.toLowerCase())) {
+      alert('Security Warning: Only valid image files (JPG, PNG, WEBP, GIF, SVG) are allowed.');
+      throw new Error('Invalid file type');
+    }
+
+    // 2. File Size Limit (Max 5MB to prevent DoS memory overflow)
+    const MAX_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      alert('Security Warning: Image file exceeds the 5MB size limit.');
+      throw new Error('File size exceeds limit');
+    }
+
     if (supabaseClient && supabaseClient.storage) {
       try {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
+        const fileExt = file.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g, '');
+        const fileName = `img_${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
         const { data, error } = await supabaseClient.storage.from(bucketName).upload(fileName, file, {
           cacheControl: '3600',
           upsert: false
@@ -725,16 +762,20 @@
         return;
       }
 
-      const file = fileInput.files[0];
-      const imageUrl = await uploadImageHelper(file, 'client-logos');
+      try {
+        const file = fileInput.files[0];
+        const imageUrl = await uploadImageHelper(file, 'client-logos');
 
-      let logos = JSON.parse(localStorage.getItem('dh_custom_logos') || JSON.stringify(defaultLogosList));
-      logos.push({ name: name, path: imageUrl });
-      localStorage.setItem('dh_custom_logos', JSON.stringify(logos));
+        let logos = JSON.parse(localStorage.getItem('dh_custom_logos') || JSON.stringify(defaultLogosList));
+        logos.push({ name: name, path: imageUrl });
+        localStorage.setItem('dh_custom_logos', JSON.stringify(logos));
 
-      loadLogos();
-      addLogoForm.reset();
-      showToast(`Uploaded and added logo for ${name}!`);
+        loadLogos();
+        addLogoForm.reset();
+        showToast(`Uploaded and added logo for ${name}!`);
+      } catch (err) {
+        console.error('Logo upload error:', err);
+      }
     });
   }
 
@@ -768,10 +809,10 @@
 
     projectsGrid.innerHTML = projects.map((p, idx) => `
       <div class="admin-project-card">
-        <img src="${p.img}" alt="${p.title}" class="admin-project-img" onerror="this.src='../assets/logo.jpeg'">
+        <img src="${escapeHTML(p.img)}" alt="${escapeHTML(p.title)}" class="admin-project-img" onerror="this.src='../assets/logo.jpeg'">
         <div class="admin-project-body">
-          <span class="badge badge-gold">${p.category}</span>
-          <h4 class="admin-project-title">${p.title}</h4>
+          <span class="badge badge-gold">${escapeHTML(p.category)}</span>
+          <h4 class="admin-project-title">${escapeHTML(p.title)}</h4>
           <button type="button" class="btn btn-outline-danger btn-sm mt-2" onclick="removeProject(${idx})">Delete Project</button>
         </div>
       </div>
