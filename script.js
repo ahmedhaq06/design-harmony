@@ -456,7 +456,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (sec1Title && d.heroTitle) sec1Title.textContent = d.heroTitle;
         if (sec1Ps.length > 0 && d.p1) sec1Ps[0].textContent = d.p1;
         if (sec1Ps.length > 1 && d.p2) sec1Ps[1].textContent = d.p2;
-        if (sec1Img && d.img) sec1Img.src = fixImgPath(d.img);
+        if (sec1Img && d.img && d.img.trim() !== '') sec1Img.src = fixImgPath(d.img);
 
         // 3. Section 2 (Philosophy / Details / CTA / Form Headers)
         const sec2Tagline = document.querySelector('.subpage-section:nth-of-type(2) .section-tagline') || document.querySelector('.cta-text-content .cta-tagline');
