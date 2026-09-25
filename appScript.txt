@@ -17,16 +17,16 @@ function doPost(e) {
       data = e.parameter || {};
     }
 
-    var timestamp     = data.date || new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
-    var serviceType   = data.type || data.form_type || "General Inquiry";
-    var name          = data.name || "Anonymous";
-    var contact       = data.contact || data.phone || "N/A";
-    var email         = data.email || "N/A";
-    var dob           = data.dob || "N/A";
-    var projectSize   = data.project_size || "N/A";
-    var projectBudget = data.project_budget || "N/A";
-    var location      = data.location || "N/A";
-    var challenges    = data.challenges || data.message || data.details || "N/A";
+    var timestamp     = sanitizeField(data.date || new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }));
+    var serviceType   = sanitizeField(data.type || data.form_type || "General Inquiry");
+    var name          = sanitizeField(data.name || "Anonymous");
+    var contact       = sanitizeField(data.contact || data.phone || "N/A");
+    var email         = sanitizeField(data.email || "N/A");
+    var dob           = sanitizeField(data.dob || "N/A");
+    var projectSize   = sanitizeField(data.project_size || "N/A");
+    var projectBudget = sanitizeField(data.project_budget || "N/A");
+    var location      = sanitizeField(data.location || "N/A");
+    var challenges    = sanitizeField(data.challenges || data.message || data.details || "N/A");
 
     // Single Tab: All Leads Summary
     var sheet = getOrCreateSheet(ss, "All Leads Summary", [
@@ -64,6 +64,17 @@ function doPost(e) {
       .createTextOutput(JSON.stringify({ status: "error", message: error.toString() }))
       .setMimeType(ContentService.MimeType.JSON);
   }
+}
+
+function sanitizeField(val) {
+  if (val === null || val === undefined) return "N/A";
+  var str = String(val).trim();
+  if (str === "") return "N/A";
+  // Prepend single quote if string starts with + or = to force Google Sheets plain text format
+  if (str.indexOf("+") === 0 || str.indexOf("=") === 0) {
+    return "'" + str;
+  }
+  return str;
 }
 
 function getOrCreateSheet(ss, sheetName, headers) {
