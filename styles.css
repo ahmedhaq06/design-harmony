@@ -2711,3 +2711,186 @@ body {
   background: #d32f2f;
   box-shadow: 0 4px 15px rgba(229, 57, 53, 0.4);
 }
+
+/* ============================================================
+   ADMIN PAGE — MOBILE RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 900px) {
+  /* Dashboard: stack sidebar on top, content below */
+  .admin-dashboard-container {
+    flex-direction: column;
+  }
+
+  /* Sidebar → horizontal sticky top nav bar */
+  .admin-sidebar {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 14px;
+    border-right: none;
+    border-bottom: 1px solid rgba(198, 146, 20, 0.25);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    gap: 10px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-sidebar-header {
+    flex-shrink: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-right: 14px;
+    border-right: 1px solid rgba(198, 146, 20, 0.2);
+  }
+
+  .admin-sidebar-role {
+    display: none;
+  }
+
+  .admin-sidebar-brand {
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+  }
+
+  .admin-sidebar-logo {
+    width: 36px;
+    height: 36px;
+  }
+
+  /* Nav items in a horizontal row */
+  .admin-nav {
+    flex-direction: row;
+    flex-grow: 1;
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .admin-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .admin-nav-item {
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: 8px 13px;
+    font-size: 0.8rem;
+    gap: 6px;
+  }
+
+  /* Sidebar footer → inline log out */
+  .admin-sidebar-footer {
+    flex-shrink: 0;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+    padding-left: 12px;
+    border-left: 1px solid rgba(198, 146, 20, 0.2);
+  }
+
+  .admin-sidebar-footer .btn-outline-danger {
+    white-space: nowrap;
+    width: auto;
+    padding: 7px 12px;
+    font-size: 0.75rem;
+  }
+
+  /* Main content — reduce padding */
+  .admin-main-content {
+    padding: 20px 16px;
+  }
+
+  /* Topbar — stack vertically */
+  .admin-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding-bottom: 16px;
+    margin-bottom: 22px;
+  }
+
+  .admin-topbar-actions {
+    width: 100% !important;
+    justify-content: flex-start !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+  }
+
+  .admin-page-title {
+    font-size: 1.55rem;
+  }
+
+  /* Cards — reduce padding */
+  .admin-card {
+    padding: 18px 14px;
+  }
+
+  /* Single-column form grids */
+  .admin-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-services-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-logos-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 14px;
+  }
+
+  /* Toast — bottom of screen on mobile */
+  .admin-toast {
+    top: auto;
+    bottom: 20px;
+    right: 16px;
+    left: 16px;
+    text-align: center;
+    font-size: 0.88rem;
+    padding: 13px 18px;
+  }
+
+  /* Modal */
+  .dh-modal-card {
+    padding: 24px 18px;
+  }
+
+  .dh-modal-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-auth-card {
+    padding: 24px 16px;
+  }
+
+  .admin-auth-title {
+    font-size: 1.4rem;
+  }
+
+  .admin-page-title {
+    font-size: 1.3rem;
+  }
+
+  .admin-card-title {
+    font-size: 1.2rem;
+  }
+
+  .admin-main-content .form-control,
+  .admin-auth-card .form-control {
+    padding: 12px 14px;
+    font-size: 0.9rem;
+  }
+}
