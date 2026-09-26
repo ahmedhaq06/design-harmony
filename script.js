@@ -483,25 +483,120 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  /* Dynamic Sync for Site-Wide Contact Info Copy */
-  const siteContentStr = localStorage.getItem('dh_site_content');
-  if (siteContentStr) {
-    try {
-      const siteContent = JSON.parse(siteContentStr);
-      if (siteContent.phone) {
-        document.querySelectorAll('a[href^="tel:"]').forEach(el => {
-          el.href = `tel:${siteContent.phone.replace(/\s+/g, '')}`;
-          el.textContent = siteContent.phone;
-        });
-      }
-      if (siteContent.email) {
-        document.querySelectorAll('a[href^="mailto:"]').forEach(el => {
-          el.href = `mailto:${siteContent.email}`;
-          el.textContent = siteContent.email;
-        });
-      }
-    } catch (e) { }
+  /* Dynamic Sync for Site-Wide Contact Info & Social Links Copy */
+  function loadSiteContentCopy() {
+    const siteContentStr = localStorage.getItem('dh_site_content');
+    if (siteContentStr) {
+      try {
+        const siteContent = JSON.parse(siteContentStr);
+        if (siteContent.phone) {
+          document.querySelectorAll('a[href^="tel:"]').forEach(el => {
+            el.href = `tel:${siteContent.phone.replace(/\s+/g, '')}`;
+            el.textContent = siteContent.phone;
+          });
+        }
+        if (siteContent.email) {
+          document.querySelectorAll('a[href^="mailto:"]').forEach(el => {
+            el.href = `mailto:${siteContent.email}`;
+            el.textContent = siteContent.email;
+          });
+        }
+        if (siteContent.ig_dh && document.getElementById('footer-link-ig-dh')) document.getElementById('footer-link-ig-dh').href = siteContent.ig_dh;
+        if (siteContent.ig_anuradha && document.getElementById('footer-link-ig-anuradha')) document.getElementById('footer-link-ig-anuradha').href = siteContent.ig_anuradha;
+        if (siteContent.fb_dh && document.getElementById('footer-link-fb-dh')) document.getElementById('footer-link-fb-dh').href = siteContent.fb_dh;
+        if (siteContent.fb_anuradha && document.getElementById('footer-link-fb-anuradha')) document.getElementById('footer-link-fb-anuradha').href = siteContent.fb_anuradha;
+        if (siteContent.yt_dh && document.getElementById('footer-link-yt-dh')) document.getElementById('footer-link-yt-dh').href = siteContent.yt_dh;
+      } catch (e) { }
+    }
   }
+  loadSiteContentCopy();
+
+  /* Dynamic Sync for Service Marquee Galleries across all service subpages */
+  function renderServiceMarqueeGallery() {
+    const resMarqueeTrack = document.querySelector('.res-marquee-track');
+    if (!resMarqueeTrack) return;
+
+    try {
+      const currentPath = window.location.pathname.toLowerCase();
+      let key = '';
+      if (currentPath.includes('residential-interiors')) key = 'residential';
+      else if (currentPath.includes('corporate-interiors')) key = 'corporate';
+      else if (currentPath.includes('retail-interiors')) key = 'retail';
+      else if (currentPath.includes('vastu-consultancy')) key = 'vastu';
+      else if (currentPath.includes('dob-analysis')) key = 'dob';
+      else if (currentPath.includes('consultation')) key = 'consultation';
+      else if (currentPath.includes('service-detail')) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sQuery = urlParams.get('service') || urlParams.get('id') || urlParams.get('title') || '';
+        key = (sQuery || '').toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-');
+      }
+
+      if (key) {
+        const savedGalleryStr = localStorage.getItem(`dh_gallery_${key}`);
+        if (savedGalleryStr) {
+          const galleryPhotos = JSON.parse(savedGalleryStr);
+          if (Array.isArray(galleryPhotos) && galleryPhotos.length > 0) {
+            const isSubDir = currentPath.includes('/pages/');
+            const fixImgPath = (url) => {
+              if (!url) return '';
+              if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
+              if (isSubDir) {
+                return url.startsWith('../') ? url : '../' + url.replace(/^\//, '');
+              } else {
+                return url.replace(/^\.\.\//, '');
+              }
+            };
+
+            const fullList = galleryPhotos.length < 5 ? [...galleryPhotos, ...galleryPhotos, ...galleryPhotos] : [...galleryPhotos, ...galleryPhotos];
+            resMarqueeTrack.innerHTML = fullList.map(imgUrl => `
+              <article class="res-showcase-card">
+                <div class="res-card-img-wrap">
+                  <img src="${fixImgPath(imgUrl)}" alt="Service Gallery Image" onerror="this.src='${isSubDir ? '../assets/logo.jpeg' : 'assets/logo.jpeg'}'">
+                </div>
+              </article>
+            `).join('');
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Error rendering service marquee gallery:', err);
+    }
+  }
+  renderServiceMarqueeGallery();
+
+  // Async Cloud Sync: Fetch live admin changes from Supabase DB so EVERY visitor sees admin edits live
+  async function syncCloudDataToVisitor() {
+    const SUPABASE_URL = (window.ENV && window.ENV.SUPABASE_URL) || 'https://jdkrisfxkegywsyhqkpj.supabase.co';
+    const SUPABASE_KEY = (window.ENV && window.ENV.SUPABASE_ANON_KEY) || '';
+
+    if (!SUPABASE_URL || !SUPABASE_KEY) return;
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/dh_site_data?select=*`, {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`
+        }
+      });
+
+      if (res.ok) {
+        const rows = await res.json();
+        if (Array.isArray(rows) && rows.length > 0) {
+          rows.forEach(row => {
+            if (row.key && row.value !== undefined) {
+              const valStr = typeof row.value === 'string' ? row.value : JSON.stringify(row.value);
+              localStorage.setItem(row.key, valStr);
+            }
+          });
+          loadSiteContentCopy();
+          renderServiceMarqueeGallery();
+        }
+      }
+    } catch (err) {
+      console.error('Visitor cloud sync error:', err);
+    }
+  }
+  syncCloudDataToVisitor();
 
   /* Dynamic Sync for Admin-Uploaded Client Logos Ticker */
   const marqueeTracks = document.querySelectorAll('.clients-marquee-track');
@@ -716,61 +811,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) { }
   }
 
-  /* Contact Form Interactive Submission Handler */
-  const contactForms = document.querySelectorAll('.js-contact-form');
-  contactForms.forEach(form => {
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const feedback = form.querySelector('.form-feedback-msg');
-      const submitBtn = form.querySelector('.form-submit-btn');
-
-      // Extract Contact Form Info
-      const formData = new FormData(form);
-      const leadObj = {
-        date: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-        type: form.getAttribute('data-form-type') || 'Contact Us Form',
-        name: formData.get('name') || 'Anonymous',
-        contact: formData.get('phone') || formData.get('contact') || 'N/A',
-        email: formData.get('email') || 'N/A',
-        dob: 'N/A',
-        project_size: 'N/A',
-        project_budget: 'N/A',
-        location: 'N/A',
-        challenges: formData.get('message') || formData.get('subject') || 'Contact Inquiry',
-        details: formData.get('message') || formData.get('subject') || 'Contact Inquiry'
-      };
-
-      // Save locally for Admin Dashboard
-      try {
-        let existingLeads = JSON.parse(localStorage.getItem('dh_form_leads') || '[]');
-        existingLeads.unshift(leadObj);
-        localStorage.setItem('dh_form_leads', JSON.stringify(existingLeads));
-      } catch (err) {
-        console.error(err);
-      }
-
-      // Send to Google Sheets if Web App URL configured
-      sendLeadToGoogleSheets(leadObj);
-
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Sending...';
-      }
-
-      setTimeout(() => {
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = 'Message Sent!';
-        }
-        if (feedback) {
-          feedback.className = 'form-feedback-msg success';
-          feedback.innerHTML = 'Thank you for reaching out to Design Harmony! Your message has been received. We will contact you shortly.';
-          feedback.style.display = 'block';
-        }
-        form.reset();
-      }, 1000);
-    });
-  });
 });
 
 

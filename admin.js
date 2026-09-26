@@ -105,6 +105,77 @@
     });
   }
 
+  // Cloud Sync Helper via Supabase REST API
+  async function syncKeyToCloud(key, data) {
+    const SUPABASE_URL = (window.ENV && window.ENV.SUPABASE_URL) || localStorage.getItem('dh_supabase_url') || 'https://jdkrisfxkegywsyhqkpj.supabase.co';
+    const SUPABASE_KEY = (window.ENV && window.ENV.SUPABASE_ANON_KEY) || localStorage.getItem('dh_supabase_key') || '';
+
+    if (!SUPABASE_URL || !SUPABASE_KEY) return;
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/dh_site_data`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=merge-duplicates'
+        },
+        body: JSON.stringify([{
+          key: key,
+          value: data,
+          updated_at: new Date().toISOString()
+        }])
+      });
+
+      if (res.ok) {
+        console.log(`[Cloud Sync] Successfully synced ${key} to Supabase`);
+      } else {
+        const errJson = await res.json().catch(() => ({}));
+        console.warn(`[Cloud Sync] Notice for ${key}:`, errJson);
+      }
+    } catch (err) {
+      console.error(`[Cloud Sync] Failed syncing ${key}:`, err);
+    }
+  }
+
+  // Fetch Cloud Data on Dashboard Load
+  async function loadCloudDataIntoAdmin() {
+    const SUPABASE_URL = (window.ENV && window.ENV.SUPABASE_URL) || localStorage.getItem('dh_supabase_url') || 'https://jdkrisfxkegywsyhqkpj.supabase.co';
+    const SUPABASE_KEY = (window.ENV && window.ENV.SUPABASE_ANON_KEY) || localStorage.getItem('dh_supabase_key') || '';
+
+    if (!SUPABASE_URL || !SUPABASE_KEY) return;
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/dh_site_data?select=*`, {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`
+        }
+      });
+
+      if (res.ok) {
+        const rows = await res.json();
+        if (Array.isArray(rows) && rows.length > 0) {
+          rows.forEach(row => {
+            if (row.key && row.value !== undefined) {
+              const valStr = typeof row.value === 'string' ? row.value : JSON.stringify(row.value);
+              localStorage.setItem(row.key, valStr);
+            }
+          });
+          loadServices();
+          loadSubpageEditor();
+          loadLogos();
+          loadProjects();
+          loadSiteContent();
+          loadGalleryPhotos();
+        }
+      }
+    } catch (err) {
+      console.error('[Cloud Sync] Failed fetching cloud data into admin:', err);
+    }
+  }
+
   // Show Dashboard
   function showDashboard() {
     authScreen.style.display = 'none';
@@ -114,6 +185,8 @@
     loadLogos();
     loadProjects();
     loadSiteContent();
+    loadGalleryPhotos();
+    loadCloudDataIntoAdmin();
   }
 
   function loadSiteContent() {
@@ -125,6 +198,11 @@
         if (data.email && document.getElementById('content-email')) document.getElementById('content-email').value = data.email;
         if (data.address && document.getElementById('content-address')) document.getElementById('content-address').value = data.address;
         if (data.heroTitle && document.getElementById('content-hero-title')) document.getElementById('content-hero-title').value = data.heroTitle;
+        if (data.ig_dh && document.getElementById('content-ig-dh')) document.getElementById('content-ig-dh').value = data.ig_dh;
+        if (data.ig_anuradha && document.getElementById('content-ig-anuradha')) document.getElementById('content-ig-anuradha').value = data.ig_anuradha;
+        if (data.fb_dh && document.getElementById('content-fb-dh')) document.getElementById('content-fb-dh').value = data.fb_dh;
+        if (data.fb_anuradha && document.getElementById('content-fb-anuradha')) document.getElementById('content-fb-anuradha').value = data.fb_anuradha;
+        if (data.yt_dh && document.getElementById('content-yt-dh')) document.getElementById('content-yt-dh').value = data.yt_dh;
       } catch (e) { }
     }
   }
@@ -154,6 +232,7 @@
     'tab-subpages': { title: 'Service Subpages Editor', sub: 'Customize titles, paragraphs, and featured images for service subpages.' },
     'tab-logos': { title: 'Client Logos Ticker', sub: 'Add or manage client logos displayed in the home page ticker.' },
     'tab-projects': { title: 'Projects Portfolio', sub: 'Add, update, or remove projects shown on the Projects page.' },
+    'tab-gallery': { title: 'Service Gallery Photos', sub: 'Upload and manage marquee gallery photos for each service page.' },
     'tab-content': { title: 'Website Copy & Contact', sub: 'Edit main studio contact details and hero titles.' },
     'tab-security': { title: 'Account Security', sub: 'Change your admin login password securely.' }
   };
@@ -387,6 +466,7 @@
     if (confirmed) {
       services.splice(index, 1);
       localStorage.setItem('dh_custom_services', JSON.stringify(services));
+      syncKeyToCloud('dh_custom_services', services);
       loadServices();
       resetServiceForm();
       showToast(`Deleted ${title}`);
@@ -419,6 +499,7 @@
       }
 
       localStorage.setItem('dh_custom_services', JSON.stringify(services));
+      syncKeyToCloud('dh_custom_services', services);
 
       // Also save the full subpage content!
       const subKey = getSubpageKeyFromLink(link, title);
@@ -452,6 +533,7 @@
         };
 
         localStorage.setItem(`dh_subpage_${subKey}`, JSON.stringify(subpageObj));
+        syncKeyToCloud(`dh_subpage_${subKey}`, subpageObj);
       }
 
       loadServices();
@@ -547,7 +629,7 @@
       heroTitle: 'Experience Meets Thoughtful Design',
       p1: 'Creating functional, elegant, and harmonious spaces tailored around the way you live and work.',
       p2: 'Founded by Anuradha Chadha, Design Harmony stands at the intersection of aesthetic sophistication, ergonomic practical utility, and spatial science.',
-      img: '../Maam\'s Image.png',
+      img: '../Maam\'s Image.jpeg',
       sec2Tagline: 'OUR STORY',
       sec2Title: 'Designing Spaces That Reflect Your Soul',
       sec2P1: 'Founded by Anuradha Chadha, Design Harmony stands at the intersection of aesthetic sophistication, ergonomic practical utility, and ancient spatial science. With over 20 years of hands-on experience in interior design, project management, Vastu Shastra, and Date of Birth numerology, Anuradha brings a holistic perspective to every project.',
@@ -629,6 +711,7 @@
       };
 
       localStorage.setItem(`dh_subpage_${selectedKey}`, JSON.stringify(updatedObj));
+      syncKeyToCloud(`dh_subpage_${selectedKey}`, updatedObj);
       loadSubpageEditor();
       showToast(`Saved ${selectedKey.toUpperCase()} subpage content!`);
     });
@@ -699,6 +782,7 @@
     if (confirmed) {
       logos.splice(index, 1);
       localStorage.setItem('dh_custom_logos', JSON.stringify(logos));
+      syncKeyToCloud('dh_custom_logos', logos);
       loadLogos();
       showToast('Client logo removed');
     }
@@ -770,6 +854,7 @@
         let logos = JSON.parse(localStorage.getItem('dh_custom_logos') || JSON.stringify(defaultLogosList));
         logos.push({ name: name, path: imageUrl });
         localStorage.setItem('dh_custom_logos', JSON.stringify(logos));
+        syncKeyToCloud('dh_custom_logos', logos);
 
         loadLogos();
         addLogoForm.reset();
@@ -827,6 +912,7 @@
     if (confirmed) {
       projects.splice(index, 1);
       localStorage.setItem('dh_custom_projects', JSON.stringify(projects));
+      syncKeyToCloud('dh_custom_projects', projects);
       loadProjects();
       showToast('Project deleted');
     }
@@ -852,6 +938,7 @@
       let projects = JSON.parse(localStorage.getItem('dh_custom_projects') || JSON.stringify(defaultProjectsList));
       projects.push({ title: title, category: category, img: imageUrl });
       localStorage.setItem('dh_custom_projects', JSON.stringify(projects));
+      syncKeyToCloud('dh_custom_projects', projects);
 
       loadProjects();
       addProjectForm.reset();
@@ -868,9 +955,152 @@
       const email = document.getElementById('content-email').value.trim();
       const address = document.getElementById('content-address').value.trim();
       const heroTitle = document.getElementById('content-hero-title').value.trim();
+      const ig_dh = document.getElementById('content-ig-dh') ? document.getElementById('content-ig-dh').value.trim() : 'https://www.instagram.com/interiorswithdesignharmony/';
+      const ig_anuradha = document.getElementById('content-ig-anuradha') ? document.getElementById('content-ig-anuradha').value.trim() : 'https://www.instagram.com/interiorswithanuradha/';
+      const fb_dh = document.getElementById('content-fb-dh') ? document.getElementById('content-fb-dh').value.trim() : 'https://www.facebook.com/interiorswithdesignharmony';
+      const fb_anuradha = document.getElementById('content-fb-anuradha') ? document.getElementById('content-fb-anuradha').value.trim() : 'https://www.facebook.com/profile.php?id=61564376861604';
+      const yt_dh = document.getElementById('content-yt-dh') ? document.getElementById('content-yt-dh').value.trim() : 'https://www.youtube.com/@Designharmony-1';
 
-      localStorage.setItem('dh_site_content', JSON.stringify({ phone, email, address, heroTitle }));
-      showToast('Website copy updated successfully!');
+      const contentObj = { phone, email, address, heroTitle, ig_dh, ig_anuradha, fb_dh, fb_anuradha, yt_dh };
+      localStorage.setItem('dh_site_content', JSON.stringify(contentObj));
+      syncKeyToCloud('dh_site_content', contentObj);
+      showToast('Website content & social link changes saved and synced live!');
+    });
+  }
+
+  // Service Gallery Marquee Manager
+  const defaultGalleries = {
+    residential: [
+      '../projects/Living Room.jpg',
+      '../projects/Bedroom Area.jpg',
+      '../projects/Dining Area.jpg',
+      '../projects/Kitchen Area.jpg'
+    ],
+    corporate: [
+      '../projects/BGCC HEAD OFFICE.jpg',
+      '../projects/Export Genius Office Area.jpg',
+      '../projects/Export Genius conference room.jpg',
+      '../projects/Indian Army Office.jpg',
+      '../projects/SUN Group Office reception.jpg'
+    ],
+    retail: [
+      '../assets/retail interior.jpeg',
+      '../projects/SUN Group Office reception.jpg',
+      '../assets/project managment consultancy.jpeg',
+      '../projects/BGCC HEAD OFFICE.jpg',
+      '../assets/1 front page image.jpeg'
+    ],
+    vastu: [
+      '../assets/vastu consultancy.jpeg',
+      '../assets/vastu.jpeg',
+      '../projects/Living Room.jpg',
+      '../projects/Dining Area.jpg',
+      '../assets/cloudbackg.jpeg'
+    ],
+    dob: [
+      '../assets/D.O.B analysis.jpeg',
+      '../assets/dob.jpeg',
+      '../assets/Untitled design.jpeg',
+      '../projects/Bedroom Area.jpg',
+      '../assets/cloudbackg.jpeg'
+    ],
+    consultation: [
+      '../assets/project managment consultancy.jpeg',
+      '../projects/Living Room.jpg',
+      '../projects/Export Genius Office Area.jpg',
+      '../projects/Dining Area.jpg',
+      '../assets/1 front page image.jpeg'
+    ]
+  };
+
+  const gallerySelect = document.getElementById('gallery-service-select');
+  if (gallerySelect) {
+    gallerySelect.addEventListener('change', loadGalleryPhotos);
+  }
+
+  function getGalleryKey() {
+    return gallerySelect ? (gallerySelect.value || 'residential') : 'residential';
+  }
+
+  function loadGalleryPhotos() {
+    const grid = document.getElementById('gallery-admin-grid');
+    const titleEl = document.getElementById('gallery-current-title');
+    if (!grid) return;
+
+    const key = getGalleryKey();
+    if (titleEl) {
+      const selectedName = gallerySelect ? gallerySelect.options[gallerySelect.selectedIndex].text : 'Gallery';
+      titleEl.textContent = `Current Gallery Photos — ${selectedName}`;
+    }
+
+    let photos = defaultGalleries[key] || defaultGalleries.residential;
+    const saved = localStorage.getItem(`dh_gallery_${key}`);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) photos = parsed;
+      } catch (e) { }
+    }
+
+    grid.innerHTML = photos.map((imgUrl, idx) => `
+      <div class="admin-project-card">
+        <img src="${escapeHTML(imgUrl)}" class="admin-project-img" onerror="this.src='../assets/logo.jpeg'">
+        <div class="admin-project-body">
+          <button type="button" class="btn btn-outline-danger btn-sm mt-2" onclick="removeGalleryPhoto(${idx})">Remove Photo</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  window.removeGalleryPhoto = async function (idx) {
+    const key = getGalleryKey();
+    let photos = defaultGalleries[key] || [];
+    const saved = localStorage.getItem(`dh_gallery_${key}`);
+    if (saved) {
+      try { photos = JSON.parse(saved); } catch (e) { }
+    }
+
+    const confirmed = await showConfirmModal('Remove Photo', 'Are you sure you want to remove this photo from the marquee gallery?');
+    if (confirmed) {
+      photos.splice(idx, 1);
+      localStorage.setItem(`dh_gallery_${key}`, JSON.stringify(photos));
+      syncKeyToCloud(`dh_gallery_${key}`, photos);
+      loadGalleryPhotos();
+      showToast('Photo removed from marquee gallery & synced live!');
+    }
+  };
+
+  const addGalleryForm = document.getElementById('add-gallery-photo-form');
+  if (addGalleryForm) {
+    addGalleryForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const fileInput = document.getElementById('gallery-file-input');
+      if (!fileInput || !fileInput.files[0]) {
+        alert('Please select an image file to upload.');
+        return;
+      }
+
+      const key = getGalleryKey();
+      try {
+        const file = fileInput.files[0];
+        const imageUrl = await uploadImageHelper(file, `gallery-${key}`);
+
+        let photos = defaultGalleries[key] || [];
+        const saved = localStorage.getItem(`dh_gallery_${key}`);
+        if (saved) {
+          try { photos = JSON.parse(saved); } catch (e) { }
+        }
+
+        photos.push(imageUrl);
+        localStorage.setItem(`dh_gallery_${key}`, JSON.stringify(photos));
+        syncKeyToCloud(`dh_gallery_${key}`, photos);
+
+        loadGalleryPhotos();
+        addGalleryForm.reset();
+        showToast(`Photo added to ${key.toUpperCase()} marquee gallery & synced live!`);
+      } catch (err) {
+        console.error('Gallery photo upload error:', err);
+      }
     });
   }
 

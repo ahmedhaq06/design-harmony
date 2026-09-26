@@ -376,9 +376,9 @@ ul {
 
 .hero-badge {
   display: inline-block;
-  font-size: 0.8rem;
+  font-size: 1.05rem;
   font-weight: 700;
-  letter-spacing: 3px;
+  letter-spacing: 3.5px;
   color: var(--primary-gold);
   margin-bottom: 18px;
   text-transform: uppercase;
@@ -437,12 +437,12 @@ ul {
 
 .section-tagline {
   display: inline-block;
-  font-size: 0.8rem;
+  font-size: 1.05rem;
   font-weight: 700;
-  letter-spacing: 3px;
+  letter-spacing: 3.5px;
   color: var(--text-muted);
   text-transform: uppercase;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   position: relative;
 }
 
@@ -974,10 +974,10 @@ ul {
 }
 
 .cta-tagline {
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 2px;
-  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.75);
   display: block;
   margin-bottom: 10px;
   text-transform: uppercase;
@@ -1083,13 +1083,13 @@ ul {
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 1.3fr 0.8fr 1fr 1.2fr;
+  grid-template-columns: 1.1fr 0.7fr 0.85fr 0.95fr 1.15fr;
   gap: 0;
   margin-bottom: 40px;
 }
 
 .footer-col {
-  padding: 0 32px;
+  padding: 0 24px;
   border-right: 1px solid rgba(255, 255, 255, 0.15);
 }
 
@@ -1141,6 +1141,40 @@ ul {
   color: #FFFFFF;
   border-color: #C69A4B;
   transform: translateY(-2px);
+}
+
+.footer-social-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.83rem;
+  transition: var(--transition);
+  text-decoration: none;
+}
+
+.footer-social-link svg {
+  color: #C69A4B;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.footer-social-link:hover {
+  color: #C69A4B;
+  transform: translateX(3px);
+}
+
+.footer-social-link:hover svg {
+  transform: scale(1.15);
 }
 
 .footer-heading {
@@ -1633,12 +1667,12 @@ body.nav-open .site-footer {
 
 .page-hero-subtitle {
   font-family: var(--font-sans);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 3px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 3.5px;
   color: var(--primary-gold);
   text-transform: uppercase;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   display: block;
 }
 
@@ -2717,6 +2751,7 @@ body {
    ============================================================ */
 
 @media (max-width: 900px) {
+
   /* Dashboard: stack sidebar on top, content below */
   .admin-dashboard-container {
     flex-direction: column;
@@ -2893,4 +2928,99 @@ body {
     padding: 12px 14px;
     font-size: 0.9rem;
   }
+}
+
+/* Residential Interior Right-to-Left Marquee Showcase Gallery */
+.residential-showcase-section {
+  padding: 80px 0;
+  background-color: var(--bg-cream, #FAFAF7);
+  overflow: hidden;
+  position: relative;
+}
+
+.res-marquee-wrapper {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  margin-top: 40px;
+  padding: 15px 0 25px 0;
+}
+
+.res-marquee-wrapper::before,
+.res-marquee-wrapper::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 80px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.res-marquee-wrapper::before {
+  left: 0;
+  background: linear-gradient(to right, var(--bg-cream, #FAFAF7), transparent);
+}
+
+.res-marquee-wrapper::after {
+  right: 0;
+  background: linear-gradient(to left, var(--bg-cream, #FAFAF7), transparent);
+}
+
+.res-marquee-track {
+  display: flex;
+  gap: 28px;
+  width: max-content;
+  animation: resMarqueeRightToLeft 28s linear infinite;
+}
+
+.res-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes resMarqueeRightToLeft {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.res-showcase-card {
+  width: 460px;
+  height: 340px;
+  flex-shrink: 0;
+  background: #FFFFFF;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 12px 35px rgba(42, 36, 31, 0.08);
+  border: 1px solid rgba(198, 154, 75, 0.2);
+  transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s ease;
+  position: relative;
+}
+
+.res-showcase-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 45px rgba(198, 154, 75, 0.25);
+  border-color: rgba(198, 154, 75, 0.5);
+}
+
+.res-card-img-wrap {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.res-card-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.res-showcase-card:hover .res-card-img-wrap img {
+  transform: scale(1.08);
 }

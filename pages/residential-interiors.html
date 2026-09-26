@@ -116,73 +116,137 @@
           </div>
         </div>
       </div>
-    </section>
+      <section class="residential-showcase-section">
+        <div class="container text-center">
+          <span class="section-tagline">PORTFOLIO HIGHLIGHTS</span>
+          <h2 class="about-title">Featured Residential Spaces</h2>
+        </div>
 
-    <section class="subpage-section subpage-form-section" id="booking-form">
-      <div class="container">
-        <div class="form-card subpage-form-card">
-          <h2 class="form-card-title text-center">Book Residential Interior Consultancy</h2>
+        <div class="res-marquee-wrapper">
+          <div class="res-marquee-track">
+            <!-- Card 1: Living Room -->
+            <article class="res-showcase-card">
+              <div class="res-card-img-wrap">
+                <img src="../projects/Living Room.jpg" alt="Bespoke Living Room">
+              </div>
+            </article>
 
-          <form class="consultation-form active" data-form-type="interior">
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label">Name *</label>
-                <input type="text" name="name" class="form-control" placeholder="e.g. Rahul Sharma" required>
+            <!-- Card 2: Bedroom -->
+            <article class="res-showcase-card">
+              <div class="res-card-img-wrap">
+                <img src="../projects/Bedroom Area.jpg" alt="Master Bedroom Suite">
               </div>
-              <div class="form-group">
-                <label class="form-label">Contact No. *</label>
-                <input type="tel" name="contact" class="form-control" placeholder="+91 9811234164" required>
-              </div>
-            </div>
+            </article>
 
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label">Email Address *</label>
-                <input type="email" name="email" class="form-control" placeholder="name@example.com" required>
+            <!-- Card 3: Dining -->
+            <article class="res-showcase-card">
+              <div class="res-card-img-wrap">
+                <img src="../projects/Dining Area.jpg" alt="Elegant Dining Space">
               </div>
-              <div class="form-group">
-                <label class="form-label">Project Size (Sq ft) *</label>
-                <input type="text" name="project_size" class="form-control" placeholder="e.g. 1800 Sq ft" required>
-              </div>
-            </div>
+            </article>
 
-            <div class="form-row">
+            <!-- Card 4: Kitchen -->
+            <article class="res-showcase-card">
+              <div class="res-card-img-wrap">
+                <img src="../projects/Kitchen Area.jpg" alt="Modular Kitchen Interior">
+              </div>
+            </article>
+
+            <!-- Duplicate Set for Seamless Infinite Right-to-Left Loop -->
+            <article class="res-showcase-card">
+              <div class="res-card-img-wrap">
+                <img src="../projects/Living Room.jpg" alt="Bespoke Living Room">
+              </div>
+            </article>
+
+            <article class="res-showcase-card">
+              <div class="res-card-img-wrap">
+                <img src="../projects/Bedroom Area.jpg" alt="Master Bedroom Suite">
+              </div>
+            </article>
+
+            <article class="res-showcase-card">
+              <div class="res-card-img-wrap">
+                <img src="../projects/Dining Area.jpg" alt="Elegant Dining Space">
+              </div>
+            </article>
+
+            <article class="res-showcase-card">
+              <div class="res-card-img-wrap">
+                <img src="../projects/Kitchen Area.jpg" alt="Modular Kitchen Interior">
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="subpage-section subpage-form-section" id="booking-form">
+        <div class="container">
+          <div class="form-card subpage-form-card">
+            <h2 class="form-card-title text-center">Book Residential Interior Consultancy</h2>
+
+            <form class="consultation-form active" data-form-type="interior">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Name *</label>
+                  <input type="text" name="name" class="form-control" placeholder="e.g. Rahul Sharma" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Contact No. *</label>
+                  <input type="tel" name="contact" class="form-control" placeholder="+91 9811234164" required>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Email Address *</label>
+                  <input type="email" name="email" class="form-control" placeholder="name@example.com" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Project Size (Sq ft) *</label>
+                  <input type="text" name="project_size" class="form-control" placeholder="e.g. 1800 Sq ft" required>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Project Budget *</label>
+                  <input type="text" name="project_budget" class="form-control" placeholder="e.g. ₹15 - 20 Lakhs"
+                    required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Location *</label>
+                  <input type="text" name="location" class="form-control" placeholder="e.g. Kalkaji, New Delhi"
+                    required>
+                </div>
+              </div>
+
               <div class="form-group">
-                <label class="form-label">Project Budget *</label>
-                <input type="text" name="project_budget" class="form-control" placeholder="e.g. ₹15 - 20 Lakhs"
+                <label class="form-label">Good Time to call *</label>
+                <input type="text" name="good_time" class="form-control" placeholder="e.g. Weekdays 4 PM - 6 PM"
                   required>
               </div>
-              <div class="form-group">
-                <label class="form-label">Location *</label>
-                <input type="text" name="location" class="form-control" placeholder="e.g. Kalkaji, New Delhi" required>
-              </div>
-            </div>
 
-            <div class="form-group">
-              <label class="form-label">Good Time to call *</label>
-              <input type="text" name="good_time" class="form-control" placeholder="e.g. Weekdays 4 PM - 6 PM" required>
-            </div>
+              <button type="submit" class="btn btn-gold form-submit-btn">SUBMIT CONSULTANCY REQUEST</button>
+              <div class="form-feedback-msg"></div>
+            </form>
+          </div>
+        </div>
+      </section>
 
-            <button type="submit" class="btn btn-gold form-submit-btn">SUBMIT CONSULTANCY REQUEST</button>
-            <div class="form-feedback-msg"></div>
-          </form>
+      <section class="cta-banner-section">
+        <div class="cta-banner-inner">
+          <div class="cta-text-content">
+            <span class="cta-tagline">LET'S BUILD YOUR DREAM HOME</span>
+            <h2 class="cta-title">Turn Your Residence Into a Masterpiece</h2>
+            <p class="cta-description">Contact Anuradha Chadha today to discuss your project scope.</p>
+          </div>
+          <div class="cta-buttons-wrap">
+            <a href="contact.html" class="btn btn-gold-solid">GET IN TOUCH</a>
+            <a href="projects.html" class="btn btn-outline-white">VIEW PROJECTS</a>
+          </div>
         </div>
-      </div>
-    </section>
-
-    <section class="cta-banner-section">
-      <div class="cta-banner-inner">
-        <div class="cta-text-content">
-          <span class="cta-tagline">LET'S BUILD YOUR DREAM HOME</span>
-          <h2 class="cta-title">Turn Your Residence Into a Masterpiece</h2>
-          <p class="cta-description">Contact Anuradha Chadha today to discuss your project scope.</p>
-        </div>
-        <div class="cta-buttons-wrap">
-          <a href="contact.html" class="btn btn-gold-solid">GET IN TOUCH</a>
-          <a href="projects.html" class="btn btn-outline-white">VIEW PROJECTS</a>
-        </div>
-      </div>
-    </section>
+      </section>
   </main>
 
   <footer class="site-footer">
@@ -229,6 +293,69 @@
             <li><a href="tel:+919811234164">+91 9811234164</a></li>
             <li><a href="mailto:designharmony1@gmail.com">designharmony1@gmail.com</a></li>
             <li><span>B03/8, Block B, Kalkaji, New Delhi, 110019</span></li>
+          </ul>
+        </div>
+
+        <div class="footer-col social-col">
+          <h4 class="footer-heading">CONNECT WITH US</h4>
+          <ul class="footer-social-list">
+            <li>
+              <a href="https://www.instagram.com/interiorswithdesignharmony/" target="_blank" rel="noopener noreferrer"
+                class="footer-social-link" id="footer-link-ig-dh">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+                <span>Design Harmony</span>
+              </a>
+            </li>
+            <li>
+              <a href="https://www.instagram.com/interiorswithanuradha/" target="_blank" rel="noopener noreferrer"
+                class="footer-social-link" id="footer-link-ig-anuradha">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+                <span>Anuradha</span>
+              </a>
+            </li>
+            <li>
+              <a href="https://www.facebook.com/interiorswithdesignharmony" target="_blank" rel="noopener noreferrer"
+                class="footer-social-link" id="footer-link-fb-dh">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                </svg>
+                <span>Design Harmony</span>
+              </a>
+            </li>
+            <li>
+              <a href="https://www.facebook.com/profile.php?id=61564376861604" target="_blank" rel="noopener noreferrer"
+                class="footer-social-link" id="footer-link-fb-anuradha">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                </svg>
+                <span>Anuradha</span>
+              </a>
+            </li>
+            <li>
+              <a href="https://www.youtube.com/@Designharmony-1" target="_blank" rel="noopener noreferrer"
+                class="footer-social-link" id="footer-link-yt-dh">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path
+                    d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z">
+                  </path>
+                  <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+                </svg>
+                <span>Design Harmony</span>
+              </a>
+            </li>
           </ul>
         </div>
       </div>
