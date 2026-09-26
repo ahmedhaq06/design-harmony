@@ -231,7 +231,7 @@
     'tab-services': { title: 'Services Control Center', sub: 'Add, edit, or remove services displayed across the website.' },
     'tab-subpages': { title: 'Service Subpages Editor', sub: 'Customize titles, paragraphs, and featured images for service subpages.' },
     'tab-logos': { title: 'Client Logos Ticker', sub: 'Add or manage client logos displayed in the home page ticker.' },
-    'tab-projects': { title: 'Projects Portfolio', sub: 'Add, update, or remove projects shown on the Projects page.' },
+    'tab-projects': { title: 'Interior Projects Portfolio', sub: 'Add, update, or remove projects shown on the Interior Projects page.' },
     'tab-gallery': { title: 'Service Gallery Photos', sub: 'Upload and manage marquee gallery photos for each service page.' },
     'tab-content': { title: 'Website Copy & Contact', sub: 'Edit main studio contact details and hero titles.' },
     'tab-security': { title: 'Account Security', sub: 'Change your admin login password securely.' }
