@@ -1076,14 +1076,14 @@ ul {
 .footer-container {
   position: relative;
   z-index: 1;
-  max-width: 1280px;
+  max-width: 1480px;
   margin: 0 auto;
   padding: 0 24px;
 }
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 1.1fr 0.7fr 0.85fr 0.95fr 1.15fr;
+  grid-template-columns: 1.15fr 0.95fr 1fr 1.05fr 1.25fr;
   gap: 0;
   margin-bottom: 40px;
 }
@@ -1195,6 +1195,7 @@ ul {
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.7);
   transition: var(--transition);
+  white-space: nowrap;
 }
 
 .footer-links a:hover {
@@ -2989,8 +2990,8 @@ body {
 }
 
 .res-showcase-card {
-  width: 360px;
-  height: 240px;
+  width: 270px;
+  height: 180px;
   flex-shrink: 0;
   background: #FFFFFF;
   border-radius: 16px;
