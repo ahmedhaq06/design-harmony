@@ -171,9 +171,9 @@ ul {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: 1560px;
+  max-width: 1320px;
   margin: 0 auto;
-  padding: 0 32px;
+  padding: 0 24px;
 }
 
 .brand-logo img {
@@ -1284,8 +1284,8 @@ body.nav-open .site-footer {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   background-color: rgba(18, 16, 14, 0.6);
   opacity: 0;
   visibility: hidden;
@@ -1300,7 +1300,7 @@ body.nav-open .site-footer {
   pointer-events: auto;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1100px) {
   .nav-toggle {
     display: block;
     position: relative;
@@ -1827,7 +1827,9 @@ body.nav-open .site-footer {
   box-shadow: var(--shadow-md);
   position: relative;
   width: 100%;
+  max-width: 100%;
   box-sizing: border-box;
+  min-width: 0;
   overflow: hidden;
 }
 
@@ -1861,12 +1863,22 @@ body.nav-open .site-footer {
 
 .form-group {
   margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.form-row > * {
+  min-width: 0;
   width: 100%;
   box-sizing: border-box;
 }
@@ -1889,6 +1901,7 @@ body.nav-open .site-footer {
 .form-select {
   width: 100%;
   max-width: 100%;
+  min-width: 0;
   box-sizing: border-box;
   padding: 13px 16px;
   font-family: var(--font-sans);
@@ -1899,6 +1912,14 @@ body.nav-open .site-footer {
   border-radius: 4px;
   transition: var(--transition);
   outline: none;
+}
+
+input[type="date"].form-control {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .form-card.dark-theme .form-control,
@@ -1998,6 +2019,10 @@ textarea.form-control {
   border-radius: 6px;
   padding: 32px;
   box-shadow: var(--shadow-sm);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .contact-detail-item {
@@ -2005,6 +2030,9 @@ textarea.form-control {
   align-items: flex-start;
   gap: 16px;
   margin-bottom: 24px;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .contact-detail-item:last-child {
@@ -2036,38 +2064,67 @@ textarea.form-control {
   font-size: 1rem;
   font-weight: 500;
   color: var(--text-dark);
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 /* Responsive adjust for subpages */
 @media (max-width: 992px) {
   .subpage-grid-2col {
     grid-template-columns: 1fr;
-    gap: 36px;
+    gap: 32px;
   }
 }
 
 @media (max-width: 768px) {
+  .subpage-section {
+    padding: 40px 0;
+  }
+
   .form-row {
     grid-template-columns: 1fr;
     gap: 16px;
   }
 
-  .form-card {
-    padding: 24px 16px;
+  .form-card,
+  .contact-detail-card {
+    padding: 24px 18px;
+  }
+
+  .form-control,
+  .form-select {
+    font-size: 16px; /* Prevents auto-zoom on mobile Safari (iPhone 390x844) */
   }
 
   .page-hero {
-    padding: 130px 0 60px;
+    padding: 120px 0 50px;
   }
 }
 
 @media (max-width: 480px) {
-  .form-card {
+  .container {
+    padding: 0 16px;
+  }
+
+  .form-card,
+  .contact-detail-card {
     padding: 20px 14px;
   }
 
   .form-card-title {
     font-size: 1.45rem;
+  }
+
+  .consult-tab-btn {
+    padding: 12px 14px;
+  }
+
+  .consult-tab-btn .tab-title {
+    font-size: 0.98rem;
+  }
+
+  .consult-tab-btn .tab-sub {
+    font-size: 0.74rem;
   }
 }
 
@@ -2172,6 +2229,13 @@ body {
   margin-bottom: 24px;
   width: 100%;
   box-sizing: border-box;
+  min-width: 0;
+}
+
+.consult-form-tabs > * {
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .consult-tab-btn {
@@ -2186,6 +2250,10 @@ body {
   flex-direction: column;
   width: 100%;
   box-sizing: border-box;
+  min-width: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  font-family: inherit;
 }
 
 .consult-tab-btn:hover {
@@ -2205,6 +2273,8 @@ body {
   font-weight: 700;
   color: var(--text-dark);
   line-height: 1.25;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .consult-tab-btn .tab-sub {
