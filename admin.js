@@ -655,7 +655,7 @@
       sec2Tagline: 'DIRECT CONTACT INFO',
       sec2Title: 'Book Your Consultation',
       sec2P1: 'Select your required consultation service and fill out the details. Our team will get in touch with you shortly.',
-      sec2P2: 'Office: B03/8, Block B, Kalkaji, New Delhi, 110019. Phone: +91 9811234164.'
+      sec2P2: 'Office: B 83 b lower GF kalkaji I, New Delhi 110019. Phone: +91 9811234164.'
     }
   };
 
