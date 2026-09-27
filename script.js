@@ -222,9 +222,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* Dynamic Sync for Admin-Managed Services Grid, Header Dropdown & Footer */
-  const servicesGrid = document.querySelector('.services-grid');
-  const customServicesStr = localStorage.getItem('dh_custom_services');
-  if (customServicesStr) {
+  function renderCustomServices() {
+    const servicesGrid = document.querySelector('.services-grid');
+    const customServicesStr = localStorage.getItem('dh_custom_services');
+    if (!customServicesStr) return;
     try {
       const customServices = JSON.parse(customServicesStr);
       if (Array.isArray(customServices) && customServices.length > 0) {
@@ -269,7 +270,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
           document.querySelectorAll('.services-grid .service-card').forEach((card, i) => {
             card.classList.add('reveal-scale', 'active', `reveal-delay-${(i % 3) + 1}`);
-            revealObserver.observe(card);
+            if (typeof revealObserver !== 'undefined' && revealObserver.observe) {
+              revealObserver.observe(card);
+            }
           });
         }
 
@@ -291,23 +294,12 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Error syncing custom services:', e);
     }
   }
-
-  /* Dynamic Sync for Admin-Edited Page Content across all 10 Pages */
-  const currentPath = window.location.pathname.toLowerCase();
-  let subpageKey = '';
-  if (currentPath.includes('residential-interiors')) subpageKey = 'residential';
-  else if (currentPath.includes('corporate-interiors')) subpageKey = 'corporate';
-  else if (currentPath.includes('retail-interiors')) subpageKey = 'retail';
-  else if (currentPath.includes('consultation')) subpageKey = 'consultation';
-  else if (currentPath.includes('vastu-consultancy')) subpageKey = 'vastu';
-  else if (currentPath.includes('dob-analysis')) subpageKey = 'dob';
-  else if (currentPath.includes('about')) subpageKey = 'about';
-  else if (currentPath.includes('projects')) subpageKey = 'projects';
-  else if (currentPath.includes('contact')) subpageKey = 'contact';
-  else if (currentPath.endsWith('index.html') || currentPath.endsWith('/') || currentPath === '' || currentPath.includes('index')) subpageKey = 'home';
+  renderCustomServices();
 
   /* Dynamic Custom Service Page (service-detail.html) Renderer */
-  if (currentPath.includes('service-detail')) {
+  function renderServiceDetail() {
+    const currentPath = window.location.pathname.toLowerCase();
+    if (!currentPath.includes('service-detail')) return;
     try {
       const urlParams = new URLSearchParams(window.location.search);
       const serviceQuery = urlParams.get('service') || urlParams.get('id') || urlParams.get('title') || '';
@@ -410,14 +402,29 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Error rendering service detail:', err);
     }
   }
+  renderServiceDetail();
 
-  if (subpageKey) {
+  /* Dynamic Sync for Admin-Edited Page Content across all Pages */
+  function loadSubpageContent() {
+    const currentPath = window.location.pathname.toLowerCase();
+    let subpageKey = '';
+    if (currentPath.includes('residential-interiors')) subpageKey = 'residential';
+    else if (currentPath.includes('corporate-interiors')) subpageKey = 'corporate';
+    else if (currentPath.includes('retail-interiors')) subpageKey = 'retail';
+    else if (currentPath.includes('consultation')) subpageKey = 'consultation';
+    else if (currentPath.includes('vastu-consultancy')) subpageKey = 'vastu';
+    else if (currentPath.includes('dob-analysis')) subpageKey = 'dob';
+    else if (currentPath.includes('about')) subpageKey = 'about';
+    else if (currentPath.includes('projects')) subpageKey = 'projects';
+    else if (currentPath.includes('contact')) subpageKey = 'contact';
+    else if (currentPath.endsWith('index.html') || currentPath.endsWith('/') || currentPath === '' || currentPath.includes('index')) subpageKey = 'home';
+
+    if (!subpageKey) return;
     const subpageDataStr = localStorage.getItem(`dh_subpage_${subpageKey}`);
     if (subpageDataStr) {
       try {
         const d = JSON.parse(subpageDataStr);
 
-        // Helper to adjust relative paths for root vs subpages
         const isSubDir = currentPath.includes('/pages/');
         const fixImgPath = (url) => {
           if (!url) return '';
@@ -429,7 +436,6 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         };
 
-        // 1. Hero Elements
         const heroSub = document.querySelector('.page-hero-subtitle') || document.querySelector('.hero-badge');
         const heroTitle = document.querySelector('.page-hero-title') || document.querySelector('.hero-title');
         const heroDesc = document.querySelector('.page-hero-desc') || document.querySelector('.hero-description');
@@ -446,7 +452,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (heroDesc && d.p1) heroDesc.textContent = d.p1;
         if (heroBg && d.img) heroBg.style.backgroundImage = `url('${fixImgPath(d.img)}')`;
 
-        // 2. Section 1 (Story / Main Content)
         const sec1Tagline = document.querySelector('.subpage-section:nth-of-type(1) .section-tagline') || document.querySelector('.about-section .section-tagline');
         const sec1Title = document.querySelector('.subpage-section:nth-of-type(1) .about-title') || document.querySelector('.about-section .about-title');
         const sec1Ps = document.querySelectorAll('.subpage-section:nth-of-type(1) .subpage-text-body p, .about-section .about-text-body p');
@@ -458,7 +463,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (sec1Ps.length > 1 && d.p2) sec1Ps[1].textContent = d.p2;
         if (sec1Img && d.img && d.img.trim() !== '') sec1Img.src = fixImgPath(d.img);
 
-        // 3. Section 2 (Philosophy / Details / CTA / Form Headers)
         const sec2Tagline = document.querySelector('.subpage-section:nth-of-type(2) .section-tagline') || document.querySelector('.cta-text-content .cta-tagline');
         const sec2Title = document.querySelector('.subpage-section:nth-of-type(2) .about-title') || document.querySelector('.subpage-section:nth-of-type(2) .section-title') || document.querySelector('.cta-text-content .cta-title');
         const sec2Ps = document.querySelectorAll('.subpage-section:nth-of-type(2) .subpage-text-body p');
@@ -470,7 +474,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (sec2Ps.length > 1 && d.sec2P2) sec2Ps[1].textContent = d.sec2P2;
         if (ctaDesc && d.sec2P1 && !sec2Ps.length) ctaDesc.textContent = d.sec2P1;
 
-        // Contact Page Form Header Sync
         if (subpageKey === 'contact') {
           const formCardTitle = document.querySelector('.form-card-title');
           const formCardSub = document.querySelector('.form-card-subtitle');
@@ -482,6 +485,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   }
+  loadSubpageContent();
 
   /* Dynamic Sync for Site-Wide Contact Info & Social Links Copy */
   function loadSiteContentCopy() {
@@ -564,7 +568,68 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   renderServiceMarqueeGallery();
 
-  // Async Cloud Sync: Fetch live admin changes from Supabase DB so EVERY visitor sees admin edits live
+  /* Dynamic Sync for Admin-Uploaded Client Logos Ticker */
+  function renderCustomLogos() {
+    const marqueeTracks = document.querySelectorAll('.clients-marquee-track');
+    const customLogosStr = localStorage.getItem('dh_custom_logos');
+    if (marqueeTracks.length > 0 && customLogosStr) {
+      try {
+        const customLogos = JSON.parse(customLogosStr);
+        if (Array.isArray(customLogos) && customLogos.length > 0) {
+          const logoHTML = customLogos.map(item => {
+            const imgPath = typeof item === 'string' ? `our clients/${item}` : item.path;
+            const altName = typeof item === 'string' ? item : item.name;
+            return `
+              <div class="client-logo-item">
+                <img src="${imgPath}" alt="${altName}">
+              </div>
+            `;
+          }).join('');
+
+          marqueeTracks.forEach(track => {
+            track.innerHTML = logoHTML;
+          });
+        }
+      } catch (err) {
+        console.error('Error syncing custom logos:', err);
+      }
+    }
+  }
+  renderCustomLogos();
+
+  /* Dynamic Sync for Admin-Uploaded Portfolio Projects */
+  function renderCustomProjects() {
+    const projectsGridElem = document.querySelector('.projects-grid');
+    const customProjectsStr = localStorage.getItem('dh_custom_projects');
+    if (projectsGridElem && customProjectsStr) {
+      try {
+        const customProjects = JSON.parse(customProjectsStr);
+        if (Array.isArray(customProjects) && customProjects.length > 0) {
+          const projectsHTML = customProjects.map(p => {
+            const categorySlug = (p.category || 'residential').toLowerCase().includes('corporate') ? 'corporate' :
+              (p.category || '').toLowerCase().includes('retail') ? 'retail' : 'residential';
+            return `
+              <div class="project-card" data-category="${categorySlug}">
+                <div class="project-img-wrap">
+                  <img src="${p.img}" alt="${p.title}" class="project-img">
+                  <div class="project-overlay">
+                    <span class="project-category-tag">${p.category || 'Interior'}</span>
+                    <h3 class="project-title">${p.title}</h3>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+          projectsGridElem.innerHTML = projectsHTML;
+        }
+      } catch (err) {
+        console.error('Error syncing custom projects:', err);
+      }
+    }
+  }
+  renderCustomProjects();
+
+  // Async Cloud Sync: Fetch live admin changes from Supabase DB so EVERY visitor sees admin edits live on any device
   async function syncCloudDataToVisitor() {
     const SUPABASE_URL = (window.ENV && window.ENV.SUPABASE_URL) || 'https://jdkrisfxkegywsyhqkpj.supabase.co';
     const SUPABASE_KEY = (window.ENV && window.ENV.SUPABASE_ANON_KEY) || '';
@@ -590,6 +655,11 @@ document.addEventListener('DOMContentLoaded', () => {
           });
           loadSiteContentCopy();
           renderServiceMarqueeGallery();
+          renderCustomServices();
+          renderServiceDetail();
+          loadSubpageContent();
+          renderCustomLogos();
+          renderCustomProjects();
         }
       }
     } catch (err) {
@@ -597,61 +667,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   syncCloudDataToVisitor();
-
-  /* Dynamic Sync for Admin-Uploaded Client Logos Ticker */
-  const marqueeTracks = document.querySelectorAll('.clients-marquee-track');
-  const customLogosStr = localStorage.getItem('dh_custom_logos');
-  if (marqueeTracks.length > 0 && customLogosStr) {
-    try {
-      const customLogos = JSON.parse(customLogosStr);
-      if (Array.isArray(customLogos) && customLogos.length > 0) {
-        const logoHTML = customLogos.map(item => {
-          const imgPath = typeof item === 'string' ? `our clients/${item}` : item.path;
-          const altName = typeof item === 'string' ? item : item.name;
-          return `
-            <div class="client-logo-item">
-              <img src="${imgPath}" alt="${altName}">
-            </div>
-          `;
-        }).join('');
-
-        marqueeTracks.forEach(track => {
-          track.innerHTML = logoHTML;
-        });
-      }
-    } catch (err) {
-      console.error('Error syncing custom logos:', err);
-    }
-  }
-
-  /* Dynamic Sync for Admin-Uploaded Portfolio Projects */
-  const projectsGridElem = document.querySelector('.projects-grid');
-  const customProjectsStr = localStorage.getItem('dh_custom_projects');
-  if (projectsGridElem && customProjectsStr) {
-    try {
-      const customProjects = JSON.parse(customProjectsStr);
-      if (Array.isArray(customProjects) && customProjects.length > 0) {
-        const projectsHTML = customProjects.map(p => {
-          const categorySlug = (p.category || 'residential').toLowerCase().includes('corporate') ? 'corporate' :
-            (p.category || '').toLowerCase().includes('retail') ? 'retail' : 'residential';
-          return `
-            <div class="project-card" data-category="${categorySlug}">
-              <div class="project-img-wrap">
-                <img src="${p.img}" alt="${p.title}" class="project-img">
-                <div class="project-overlay">
-                  <span class="project-category-tag">${p.category || 'Interior'}</span>
-                  <h3 class="project-title">${p.title}</h3>
-                </div>
-              </div>
-            </div>
-          `;
-        }).join('');
-        projectsGridElem.innerHTML = projectsHTML;
-      }
-    } catch (err) {
-      console.error('Error syncing custom projects:', err);
-    }
-  }
 
   /* Portfolio Filtering Logic */
   const filterBtns = document.querySelectorAll('.filter-btn');

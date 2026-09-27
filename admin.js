@@ -113,7 +113,7 @@
     if (!SUPABASE_URL || !SUPABASE_KEY) return;
 
     try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/dh_site_data`, {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/dh_site_data?on_conflict=key`, {
         method: 'POST',
         headers: {
           'apikey': SUPABASE_KEY,
