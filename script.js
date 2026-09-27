@@ -576,9 +576,17 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const customLogos = JSON.parse(customLogosStr);
         if (Array.isArray(customLogos) && customLogos.length > 0) {
+          const isSubDir = window.location.pathname.toLowerCase().includes('/pages/');
           const logoHTML = customLogos.map(item => {
-            const imgPath = typeof item === 'string' ? `our clients/${item}` : item.path;
+            let imgPath = typeof item === 'string' ? `our clients/${item}` : item.path;
             const altName = typeof item === 'string' ? item : item.name;
+            if (imgPath && !imgPath.startsWith('http://') && !imgPath.startsWith('https://') && !imgPath.startsWith('data:')) {
+              if (isSubDir) {
+                imgPath = imgPath.startsWith('../') ? imgPath : '../' + imgPath.replace(/^\//, '');
+              } else {
+                imgPath = imgPath.replace(/^\.\.\//, '');
+              }
+            }
             return `
               <div class="client-logo-item">
                 <img src="${imgPath}" alt="${altName}">
@@ -605,13 +613,22 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const customProjects = JSON.parse(customProjectsStr);
         if (Array.isArray(customProjects) && customProjects.length > 0) {
+          const isSubDir = window.location.pathname.toLowerCase().includes('/pages/');
           const projectsHTML = customProjects.map(p => {
             const categorySlug = (p.category || 'residential').toLowerCase().includes('corporate') ? 'corporate' :
               (p.category || '').toLowerCase().includes('retail') ? 'retail' : 'residential';
+            let imgPath = p.img || '';
+            if (imgPath && !imgPath.startsWith('http://') && !imgPath.startsWith('https://') && !imgPath.startsWith('data:')) {
+              if (isSubDir) {
+                imgPath = imgPath.startsWith('../') ? imgPath : '../' + imgPath.replace(/^\//, '');
+              } else {
+                imgPath = imgPath.replace(/^\.\.\//, '');
+              }
+            }
             return `
               <div class="project-card" data-category="${categorySlug}">
                 <div class="project-img-wrap">
-                  <img src="${p.img}" alt="${p.title}" class="project-img">
+                  <img src="${imgPath}" alt="${p.title}" class="project-img">
                   <div class="project-overlay">
                     <span class="project-category-tag">${p.category || 'Interior'}</span>
                     <h3 class="project-title">${p.title}</h3>

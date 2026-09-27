@@ -1424,7 +1424,74 @@ body.nav-open .site-footer {
   }
 
   .about-section {
-    padding: 60px 20px;
+    padding: 32px 16px;
+  }
+
+  .about-section-inner {
+    max-height: none;
+    border-radius: 8px;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr;
+    max-height: none;
+    height: auto;
+  }
+
+  .about-img-col {
+    order: 1;
+    height: 320px;
+    max-height: 320px;
+    width: 100%;
+  }
+
+  .about-img-frame {
+    max-height: 320px;
+    mask-image: linear-gradient(to bottom, #000 65%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 65%, transparent 100%);
+  }
+
+  .about-img-frame::before {
+    display: none;
+  }
+
+  .about-portrait-img {
+    max-height: 320px;
+    object-position: center 15%;
+  }
+
+  .about-content {
+    order: 2;
+    padding: 24px 20px 32px;
+    max-height: none;
+    height: auto;
+  }
+
+  .about-title {
+    font-size: 1.8rem;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+
+  .about-text-body p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .about-footer-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    margin-top: 18px;
+  }
+
+  .about-footer-row .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .signature-wrapper {
+    margin-top: 4px;
   }
 
   .cta-banner-section {
@@ -1473,6 +1540,25 @@ body.nav-open .site-footer {
 }
 
 @media (max-width: 480px) {
+  .about-section {
+    padding: 24px 12px;
+  }
+
+  .about-img-col,
+  .about-img-frame,
+  .about-portrait-img {
+    height: 280px;
+    max-height: 280px;
+  }
+
+  .about-content {
+    padding: 20px 16px 28px;
+  }
+
+  .about-title {
+    font-size: 1.55rem;
+  }
+
   .cta-banner-section {
     padding: 48px 16px;
   }
